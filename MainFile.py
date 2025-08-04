@@ -22,4 +22,45 @@ class Person:
         self.optical_switch = optical_switch
         self.time_tagger = time_tagger
         self.yokogawa = yokogawa
+def load_config(config_path):
+    with open(config_path, 'r') as f:
+        return yaml.safe_load(f)
+
+#Easily add more devices with the following elif statements
+
+def create_device(device_type, params):
+    if device_type == "Interferometer":
+        return Interferometer(params)
+    elif device_type == "Optical Switch":
+        return OpticalSwitch(params)
+    elif device_type == "Time Tagger":
+        return TimeTagger(params)
+    else:
+        return None
+
+def assign_persons_from_config(config):
+    persons = []
+    for person_name, person_data in config.items():
+        if not isinstance(person_data, dict):
+            continue
+        devices = {}
+        for device_type, params in person_data.items():
+            if device_type in ["Interferometer", "Optical Switch", "Time Tagger", "Yokogawa"]:
+                devices[device_type] = create_device(device_type, params)
+        person = Person(
+            name=person_name,
+            interferometer=devices.get("Interferometer"),
+            optical_switch=devices.get("Optical Switch"),
+            time_tagger=devices.get("Time Tagger"),
+            yokogawa=devices.get("Yokogawa")
+        )
+        persons.append(person)
+    return persons
+
+# Usage
+config_path = "/Users/vish/Entanglement Automation/config.yaml" # Adjust the path as needed
+config = load_config(config_path)
+persons = assign_persons_from_config(config)
+
+
 
