@@ -8,16 +8,18 @@ import shutil
 from time import sleep
 import numpy as np
 from Interferometer_v4_20250425 import Interferometer  # Import the Interferometer class
-from OpticalSwitch import OSwitch  # Import the OpticalSwitch class
+from OpticalSwitch import OpticalSwitchDriver  # Import the OpticalSwitch class
 from TimeTaggerFunctions import TimeTagger  # Import TimeTagger
+from PPCL_Bare_Bones import LaserControl
 import matplotlib.pyplot as plt
 
 class Person:
-    def __init__(self, name, interferometer, optical_switch, time_tagger):
+    def __init__(self, name, interferometer, optical_switch, time_tagger, laser):
         self.name = name
         self.interferometer = interferometer
         self.optical_switch = optical_switch
         self.time_tagger = time_tagger
+        self.laser = laser
 
 
 def load_config(config_path):
@@ -30,9 +32,11 @@ def create_device(device_type, params):
     if device_type == "Interferometer":
         return Interferometer(params)
     elif device_type == "Optical Switch":
-        return OSwitch(params)
+        return OpticalSwitchDriver(params)
     elif device_type == "Time Tagger":
         return TimeTagger(params)
+    elif device_type == "Laser":
+        return LaserControl(params)
     else:
         return None
 
@@ -43,19 +47,20 @@ def assign_persons_from_config(config):
             continue
         devices = {}
         for device_type, params in person_data.items():
-            if device_type in ["Interferometer", "Optical Switch", "Time Tagger"]:
+            if device_type in ["Interferometer", "Optical Switch", "Time Tagger", "Laser"]:
                 devices[device_type] = create_device(device_type, params)
         person = Person(
             name=person_name,
             interferometer=devices.get("Interferometer"),
             optical_switch=devices.get("Optical Switch"),
             time_tagger=devices.get("Time Tagger"),
+            laser=devices.get("Laser"),
         )
         persons.append(person)
     return persons
 
 # Usage
-config_path = "/Users/vish/Entanglement Automation/config.yaml" # Adjust the path as needed
+config_path = "config.yaml" # Adjust the path as needed
 config = load_config(config_path)
 persons = assign_persons_from_config(config)
 
