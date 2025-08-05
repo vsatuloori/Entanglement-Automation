@@ -3,25 +3,23 @@ import os
 import time
 import yaml
 import math
-import TimeTagger
 import datetime
 import shutil
 from time import sleep
 import numpy as np
 from Interferometer_v4_20250425 import Interferometer  # Import the Interferometer class
-from OpticalSwitch import OpticalSwitch  # Import the OpticalSwitch class
+from OpticalSwitch import OSwitch  # Import the OpticalSwitch class
 from TimeTaggerFunctions import TimeTagger  # Import TimeTagger
-from yoAQ2212 import Yokogawa  # Import Yokogawa class
-from supportingfunctions import GenerateUniqueFilename
 import matplotlib.pyplot as plt
 
 class Person:
-    def __init__(self, name, interferometer, optical_switch, time_tagger, yokogawa):
+    def __init__(self, name, interferometer, optical_switch, time_tagger):
         self.name = name
         self.interferometer = interferometer
         self.optical_switch = optical_switch
         self.time_tagger = time_tagger
-        self.yokogawa = yokogawa
+
+
 def load_config(config_path):
     with open(config_path, 'r') as f:
         return yaml.safe_load(f)
@@ -32,7 +30,7 @@ def create_device(device_type, params):
     if device_type == "Interferometer":
         return Interferometer(params)
     elif device_type == "Optical Switch":
-        return OpticalSwitch(params)
+        return OSwitch(params)
     elif device_type == "Time Tagger":
         return TimeTagger(params)
     else:
@@ -45,14 +43,13 @@ def assign_persons_from_config(config):
             continue
         devices = {}
         for device_type, params in person_data.items():
-            if device_type in ["Interferometer", "Optical Switch", "Time Tagger", "Yokogawa"]:
+            if device_type in ["Interferometer", "Optical Switch", "Time Tagger"]:
                 devices[device_type] = create_device(device_type, params)
         person = Person(
             name=person_name,
             interferometer=devices.get("Interferometer"),
             optical_switch=devices.get("Optical Switch"),
             time_tagger=devices.get("Time Tagger"),
-            yokogawa=devices.get("Yokogawa")
         )
         persons.append(person)
     return persons
