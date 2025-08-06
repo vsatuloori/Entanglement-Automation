@@ -3,7 +3,7 @@ import TimeTagger
 import numpy as np
 import time
 class TT:
-    def __init__(self, filename):
+    def __init__(self, params):
         # Store the provided TimeTagger instance
         self.Inst = TimeTagger.createTimeTagger()  # TimeTagger instance stored in self.Inst
         print("Time tagger is connected")
@@ -16,22 +16,22 @@ class TT:
         self.DataAcquisitionTime = None
 
         # Load the timetagger configuration
-        self.load_timetagger_config(filename)
+        self.load_timetagger_config(params)
 
-    def load_timetagger_config(self, filename):
+    def load_timetagger_config(self, params):
         # Load the data from the YAML file
-        with open(filename, 'r') as file:
-            config = yaml.safe_load(file)
+        # with open(filename, 'r') as file:
+        #     config = yaml.safe_load(file)
 
         # Load channel data directly into the class-level attributes
-        for channel, data in config['TimeTagger']['Channels'].items():
+        for channel, data in params['Channels'].items():
             self.Chlist.append(data['ChannelID'])
             self.TriggerLevels.append(data['TriggerLevel'])
             self.Deadtimes.append(data['Deadtime'])
             self.DelayTimes.append(data['DelayTime'])
 
         # Load Data Acquisition Time
-        self.DataAcquisitionTime = config['TimeTagger']['DataAcquisitionTime']
+        self.DataAcquisitionTime = params['DataAcquisitionTime']
         print("TimetaggerConfig file is successfully loaded and initialized")
 
     def initTTChs(self):
