@@ -6,20 +6,20 @@ import yaml
 start_time = time.time()
 
 class OpticalSwitchDriver:
-    def __init__(self, com_port, baudrate=9600, timeout=0.5, filename = None):
-        self.com_port = com_port
+    def __init__(self, params, baudrate=9600, timeout=0.5, filename = None):
+        self.com_port = params["com_port"]
         self.baudrate = baudrate
         self.timeout = timeout
         self.minvoltage = 0
         self.amplification = 4
-        self.maxvoltage = 4.9#
+        self.maxvoltage = 4.9
         self.device_connected = False
         self.device = None
         if self.com_port != None:
-            self.load_osw_settings(filename)
+            self.load_osw_settings(params)
     
     
-    def load_osw_settings(self, filename):
+    def load_osw_settings(self, params):
         """Load the OSW settings from the YAML file."""
             # Access OSW switch statuses
         self.SW1Status = None
@@ -27,17 +27,17 @@ class OpticalSwitchDriver:
         self.SW3Status = None
         self.SW4Status = None
         try:
-            if filename is None:
-                print(f"Filename is not mentioned to load OSW settings")
+            if params is None:
+                print(f"Params not mentioned to load OSW settings")
             else:
-                with open(filename, 'r') as file:
-                    data = yaml.safe_load(file)
+                # with open(filename, 'r') as file:
+                #     data = yaml.safe_load(file)
 
                 # Set OSW statuses from the file
-                self.SW1Status = data['OSW']['SW1Status']
-                self.SW2Status = data['OSW']['SW2Status']
-                self.SW3Status = data['OSW']['SW3Status']
-                self.SW4Status = data['OSW']['SW4Status']
+                self.SW1Status = params['SW1']
+                self.SW2Status = params['SW2']
+                self.SW3Status = params['SW3']
+                self.SW4Status = params['SW4']
 
                 # Set all switches based on the loaded configuration
                 self.OSWAll([self.SW1Status, self.SW2Status, self.SW3Status, self.SW4Status], sleep_time=0.1)
