@@ -9,7 +9,7 @@ from time import sleep
 import numpy as np
 from Interferometer_v4_20250425 import Interferometer  # Import the Interferometer class
 from OpticalSwitch import OpticalSwitchDriver  # Import the OpticalSwitch class
-from TimeTaggerFunctions import TimeTagger  # Import TimeTagger
+from TimeTaggerFunctions import TT  # Import TimeTagger
 from PPCL_Bare_Bones import LaserControl
 import matplotlib.pyplot as plt
 
@@ -34,7 +34,7 @@ def create_device(device_type, params):
     elif device_type == "Optical Switch":
         return OpticalSwitchDriver(params)
     elif device_type == "Time Tagger":
-        return TimeTagger(params)
+        return TT(params)
     elif device_type == "Laser":
         return LaserControl(params)
     else:

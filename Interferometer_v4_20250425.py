@@ -26,20 +26,20 @@ class InterferometerParams:
 
 
 class Interferometer:
-    def __init__(self, filename=None):
-        self.filename = filename
+    def __init__(self, data=None):
+        # self.filename = filename
         self.Interferometers = {}
         self.LADAqs = {}
         self.Connection = {}
 
-        if filename:
-            self.load_yaml(filename)
+        if data:
+            self.load_data(data)
         else:
             print("No YAML file provided!")
 
-    def load_yaml(self, filename):
-        with open(filename, 'r') as yaml_file:
-            data = yaml.safe_load(yaml_file)
+    def load_data(self, data):
+        # with open(filename, 'r') as yaml_file:
+        #     data = yaml.safe_load(yaml_file)
 
         # Load interferometers
         for intf_name, params in data['Interferometers'].items():
