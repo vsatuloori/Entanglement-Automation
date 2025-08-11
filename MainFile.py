@@ -7,7 +7,7 @@ import datetime
 import shutil
 from time import sleep
 import numpy as np
-from Interferometer_v4_20250425 import Interferometer  # Import the Interferometer class
+from Interferometer_v5_20250425 import Interferometer  # Import the Interferometer class
 from OpticalSwitch import OpticalSwitchDriver  # Import the OpticalSwitch class
 from TimeTaggerFunctions import TT  # Import TimeTagger
 from PPCL_Bare_Bones import LaserControl
@@ -38,7 +38,7 @@ def create_device(device_type, params):
     elif device_type == "Laser":
         return LaserControl(params)
     else:
-        return None
+        return None  
 
 def assign_persons_from_config(config):
     persons = []

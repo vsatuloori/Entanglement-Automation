@@ -3,11 +3,13 @@ Alice: # Person name
   Interferometer: # device name
 
     Connection: # Parameters
-      LADAq2:
-      - IntE
-      - IntF
+      # LADAq2:
+      # - IntE
+      # - IntF
     Interferometers:
       IntA:
+        com_port: Null
+        IP: Null
         IntName: IntA
         Out1: -1
         Out2: -5
@@ -22,6 +24,8 @@ Alice: # Person name
         V: 3.67
         VSrcCh: 0
       IntB:
+        com_port: Null
+        IP: Null
         IntName: IntB
         Out1: -2
         Out2: -6
@@ -36,6 +40,8 @@ Alice: # Person name
         V: 3.67
         VSrcCh: 1
       IntC:
+        com_port: /dev/ttyACM0
+        IP: Null
         IntName: IntC
         Out1: -3
         Out2: -7
@@ -50,6 +56,8 @@ Alice: # Person name
         V: 0.2
         VSrcCh: 2
       IntD:
+        com_port: Null
+        IP: Null
         IntName: IntD
         Out1: -3
         Out2: -7
@@ -64,6 +72,8 @@ Alice: # Person name
         V: 2.8
         VSrcCh: 0
       IntE:
+        com_port: Null
+        IP: Null
         IntName: IntE
         Out1: 2
         Out2: 3
@@ -78,6 +88,8 @@ Alice: # Person name
         V: 2.17
         VSrcCh: 0
       IntF:
+        com_port: Null
+        IP: Null
         IntName: IntF
         Out1: 5
         Out2: 6

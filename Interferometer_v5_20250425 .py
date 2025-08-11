@@ -3,13 +3,21 @@ import numpy as np
 import time
 import os
 import matplotlib.pyplot as plt
+import serial
 
 from LADaq_v1 import LADAqBoard
 from supportingfunctions import SupportFunc
 
 
 class InterferometerParams:
-    def __init__(self, params):
+    def __init__(self, params, baudrate=9600, timeout=0.5):
+        self.com_port = params.get('com_port')
+        self.IP = params.get('IP')
+        self.baudrate = baudrate
+        self.timeout = timeout
+        self.device_connected = False
+        self.device = self.connect()
+
         self.IntName = params.get('IntName')
         self.Out1 = params.get('Out1')
         self.Out2 = params.get('Out2')
@@ -23,6 +31,21 @@ class InterferometerParams:
         self.Phase270power = params.get('Phase270power')
         self.V = params.get('V')
         self.VSrcCh = params.get('VSrcCh')
+
+    def connect(self):
+        if not self.device_connected or self.device==None: 
+            print("Interferometer is not connected. Connecting now...")
+            try:
+                self.device = serial.Serial(port=self.com_port, baudrate=self.baudrate, timeout=self.timeout)
+                self.device_connected = True
+                print("Interferometer is connected")
+                time.sleep(0.1)  # Give some time for the device to initialize
+            except serial.SerialException as e:
+                print(f"Failed to connect to Interferometer: {e}")
+                self.device = None
+        else:
+            print("Interferometer is already connected.")
+        return self.device
 
 
 class Interferometer:
@@ -48,14 +71,14 @@ class Interferometer:
             setattr(self, intf_name, intf_obj)   # <<<<<< this is needed ✅
 
         # Load LADAqs
-        for ladaq_name, params in data['LADAqs'].items():
-            self.LADAqs[ladaq_name] = {
-                "com_port": params['com_port'],
-                "device": None
-            }
+        # for ladaq_name, params in data['LADAqs'].items():
+        #     self.LADAqs[ladaq_name] = {
+        #         "com_port": params['com_port'],
+        #         "device": None
+        #     }
 
         # Load connection
-        self.Connection = data['Connection']
+        # self.Connection = data['Connection']
 
     def save_yaml(self, filename):
         """Update only Interferometers, LADAqs, and Connection sections back to YAML file, without touching other sections."""
