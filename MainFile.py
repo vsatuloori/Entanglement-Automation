@@ -1,4 +1,10 @@
 # Only supports inputs for Interferometer, Optical Switch, Time Tagger and Yokogawa
+# Steps to add a new device:
+# 1. Create a new class for the device in its own file.
+# 2. Import the class in this file.
+# 3. Add an elif statement in the create_device function to handle the new device type
+# 4. Add a new attribute for the device in the Person class.
+# 5. Add the device to the assign_persons_from_config function to create the device and assign it to the person. (Marked with Add here)
 import os
 import time
 import yaml
@@ -43,13 +49,14 @@ def assign_persons_from_config(config):
             continue
         devices = {}
         for device_type, params in person_data.items():
-            if device_type in ["Interferometer", "Optical Switch", "Time Tagger"]:
+            if device_type in ["Interferometer", "Optical Switch", "Time Tagger"]: # Add here
                 devices[device_type] = create_device(device_type, params)
         person = Person(
             name=person_name,
             interferometer=devices.get("Interferometer"),
             optical_switch=devices.get("Optical Switch"),
             time_tagger=devices.get("Time Tagger"),
+            #yokogawa = devices.get("Yokogawa")  # Add here if you have a Yokogawa device (example for adding a new device)
         )
         persons.append(person)
     return persons
