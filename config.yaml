@@ -38,7 +38,7 @@ Alice: # Person name
         Phase90Voltage: 3.41
         Phase90power: 0.0011899726666666664
         V: 3.67
-        VSrcCh: 1
+        VSrcCh: 0
       IntC:
         com_port: /dev/ttyACM0
         IP: Null
@@ -54,7 +54,7 @@ Alice: # Person name
         Phase90Voltage: 0.0
         Phase90power: 0.0
         V: 0.2
-        VSrcCh: 2
+        VSrcCh: 0
       IntD:
         com_port: Null
         IP: Null
@@ -102,7 +102,7 @@ Alice: # Person name
         Phase90Voltage: 0.1
         Phase90power: 0.0011899726666666664
         V: 2.5
-        VSrcCh: 1
+        VSrcCh: 0
     LADAqs:
       LADAq2:
         com_port: /dev/ttyACM0

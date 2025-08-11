@@ -11,7 +11,7 @@ class LADAqBoard:
         self.timeout = timeout
         self.minvoltage = 0
         self.amplification = 2
-        self.maxvoltage = 4.9#
+        self.maxvoltage = 4.9
         self.device_connected = False
         self.device = self.connect()
 
