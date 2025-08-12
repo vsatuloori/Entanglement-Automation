@@ -63,6 +63,6 @@ def assign_persons_from_config(config):
 config_path = "config.yaml" # Adjust the path as needed
 config = load_config(config_path)
 persons = assign_persons_from_config(config)
-
+print(persons[0])
 
 

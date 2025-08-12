@@ -67,7 +67,7 @@ class LaserControl:
 
 
 if __name__ == "__main__":
-    ports = ["COM5"]#, "COM14"]
+    ports = ["/dev/ttyUSB0"]#, "COM14"]
     for port in ports:
         laser = LaserControl(port=port,power=10)
         laser.connect_laser()

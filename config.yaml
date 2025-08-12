@@ -103,9 +103,9 @@ Alice: # Person name
         Phase90power: 0.0011899726666666664
         V: 2.5
         VSrcCh: 0
-    LADAqs:
-      LADAq2:
-        com_port: /dev/ttyACM0
+    # LADAqs:
+    #   LADAq2:
+    #     com_port: /dev/ttyACM0
 
   Optical Switch: # device (leave a space between devices)
     com_port: Null # Parameters

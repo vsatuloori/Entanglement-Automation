@@ -42,6 +42,7 @@ class InterferometerParams:
             try:
                 self.device = serial.Serial(port=self.com_port, baudrate=self.baudrate, timeout=self.timeout)
                 self.device_connected = True
+                print(f"INTERFEROMETER: {self.device}")
                 print(f"Interferometer is connected at {self.com_port}")
                 time.sleep(0.1)  # Give some time for the device to initialize
             except serial.SerialException as e:

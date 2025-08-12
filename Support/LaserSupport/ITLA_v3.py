@@ -273,7 +273,8 @@ def ITLAConnect(port,baudrate=9600,CoBriteQuiet=False,PDArray=False):
     reftime=time.perf_counter()
     if CoBrite:
         try:
-            conn = serial.Serial('\\\\.\\'+str(port),baudrate , timeout=1)
+            conn = serial.Serial(str(port),baudrate , timeout=1)
+            # conn = serial.Serial('\\\\.\\'+str(port),baudrate , timeout=1)
         except serial.SerialException:
             return(ITLA_ERROR_SERPORT)
         #print (conn)
@@ -308,14 +309,16 @@ def ITLAConnect(port,baudrate=9600,CoBriteQuiet=False,PDArray=False):
         return (conn)
     if PDArray:
         try:
-            conn = serial.Serial('\\\\.\\'+str(port),9600 , timeout=1)
+            conn = serial.Serial(str(port),9600 , timeout=1)
+            # conn = serial.Serial('\\\\.\\'+str(port),9600 , timeout=1)
         except serial.SerialException:
             return(ITLA_ERROR_SERPORT)
         return (conn)        
     #check port
     try:
-        conn = serial.Serial('\\\\.\\'+str(port),baudrate , timeout=1)
-    except serial.SerialException:
+        conn = serial.Serial(str(port),baudrate , timeout=1)
+        # conn = serial.Serial('\\\\.\\'+str(port),baudrate , timeout=1)
+    except serial.SerialException as e:
         return(ITLA_ERROR_SERPORT)
     #print ('established connectin at baudrate',baudrate)
     baudrate2=4800
@@ -336,7 +339,8 @@ def ITLAConnect(port,baudrate=9600,CoBriteQuiet=False,PDArray=False):
                 conn.close()
                 return(ITLA_ERROR_SERBAUD)
             conn.close()
-            conn = serial.Serial('\\\\.\\'+str(port),baudrate2 , timeout=1)
+            conn = serial.Serial(str(port),baudrate2 , timeout=1)
+            # conn = serial.Serial('\\\\.\\'+str(port),baudrate2 , timeout=1)
             #print (conn)
             teller3=0
             #print (conn.inWaiting())
