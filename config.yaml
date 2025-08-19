@@ -201,3 +201,36 @@ Charlie: # leave a space (like above) to seperate different persons
     SW2: OFF
     SW3: ON
     SW4: OFF
+
+  EDFA:
+    port: Null
+    # port: '/dev/ttyUSB2'
+    baud_rate: 9600
+    pump_current: 200
+    min_cur: 0
+    max_cur: 1000
+
+  SHG:
+    SHGController:
+      com_port: /dev/ttyACM1
+      ip_addr: null 
+      baudrate: 9600
+      timeout: 0.5
+
+    Wgs:
+      Wg1:   
+        id: 3822991
+        curr_temp: 44.5
+        min_temp: 20
+        max_temp: 70
+        beta: 3450
+        VsrcCh: 0 
+
+      Wg2:  
+        id: 3822990
+        curr_temp: 44.5
+        min_temp: 20
+        max_temp: 70
+        beta: 3450
+        id: 1
+        VsrcCh: 1

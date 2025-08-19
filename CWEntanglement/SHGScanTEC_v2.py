@@ -7,7 +7,7 @@ from supportingfunctions import SupportFunc
 import yaml
 
 class SHGController:
-    def __init__(self, filename = None, com_port = None, baudrate=9600, timeout=0.5, plotData=False):
+    def __init__(self, params=None, filename = None, com_port = None, baudrate=9600, timeout=0.5, plotData=False):
         """
         Initialize SHG Voltage Controller.
 
@@ -39,6 +39,23 @@ class SHGController:
                                     settings[name]["Wgs"][wg]['beta'],
                                     settings[name]["Wgs"][wg]['VsrcCh']))
                     break
+        elif (params):
+            shg_params = params["SHGController"]
+            self.com_port = shg_params.get("com_port", com_port)
+            self.baudrate = shg_params.get("baudrate", baudrate)
+            self.timeout = shg_params.get("timeout", timeout)
+            # You can set other parameters here as needed
+                # Remove this if you want to process all found controllers
+            if "Wgs" in params:
+                for wg in params["Wgs"]:
+                    self.waveguides.append(
+                        self.WaveGuide(
+                            params["Wgs"][wg]["id"],
+                            params["Wgs"][wg]['min_temp'],
+                            params["Wgs"][wg]['max_temp'],
+                            params["Wgs"][wg]['curr_temp'],
+                            params["Wgs"][wg]['beta'],
+                            params["Wgs"][wg]['VsrcCh']))
 
         else:
             ## LADAq params

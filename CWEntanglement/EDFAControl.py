@@ -180,7 +180,7 @@ class EDFAControl:
 
 
 if __name__ == "__main__":
-    edfa = EDFAControl(filename = "EDFAControl.yaml")
+    edfa = EDFAControl(filename = "./CWEntanglement/EDFAControl.yaml")
     edfa.connect()
     edfa.set_current(f"{edfa.current:04d}")
     print(edfa.get_current())

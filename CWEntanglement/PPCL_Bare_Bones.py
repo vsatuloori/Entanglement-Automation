@@ -83,14 +83,14 @@ class LaserControl:
 if __name__ == "__main__":
     # ports = ["COM3", "COM14"]
     port = "/dev/ttyUSB1"
-    laser1= LaserControl(port=port)
+    laser1= LaserControl(port=port, wavelength=1535.82)
     print(laser1)
     # LaserControl(port=port)
     # laser.disconnect()
     laser1.connect_laser()
     laser1.turn_on()
-    laser1.laser.write_power(600)
-    laser1.turn_off()
+    # laser1.laser.write_power(600)
+    # laser1.turn_off()
     # laser1.turn_off()
     # laser.laser.laser_on()
     # laser.laser.read_freq()

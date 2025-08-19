@@ -1,7 +1,8 @@
 
 Alice:
   EDFA:
-    port: '/dev/ttyUSB2'
+    port: Null
+    # port: '/dev/ttyUSB2'
     baud_rate: 9600
     min_cur: 0
     max_cur: 1000

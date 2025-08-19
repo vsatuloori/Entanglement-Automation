@@ -9,17 +9,21 @@ from time import sleep
 import numpy as np
 from Interferometer_v5_20250425 import Interferometer  # Import the Interferometer class
 from OpticalSwitch import OpticalSwitchDriver  # Import the OpticalSwitch class
-from TimeTaggerFunctions import TT  # Import TimeTagger
-from PPCL_Bare_Bones import LaserControl
+from TimeTaggerFunctions import TT  # Import TimeTagger class
+from PPCL_Bare_Bones import LaserControl # Import Laser class
+from CWEntanglement.EDFAControl import EDFAControl # Import EDFA class
+from CWEntanglement.SHGScanTEC_v2 import SHGController # Import SHG class
 import matplotlib.pyplot as plt
 
 class Person:
-    def __init__(self, name, interferometer, optical_switch, time_tagger, laser):
+    def __init__(self, name, interferometer, optical_switch, time_tagger, laser, EDFA, SHG):
         self.name = name
         self.interferometer = interferometer
         self.optical_switch = optical_switch
         self.time_tagger = time_tagger
         self.laser = laser
+        self.EDFA = EDFA
+        self.SHG = SHG
 
 
 def load_config(config_path):
@@ -37,6 +41,10 @@ def create_device(device_type, params):
         return TT(params)
     elif device_type == "Laser":
         return LaserControl(params)
+    elif device_type == "EDFA":
+        return EDFAControl(params)
+    elif device_type == "SHG":
+        return SHGController(params)
     else:
         return None  
 
@@ -47,7 +55,7 @@ def assign_persons_from_config(config):
             continue
         devices = {}
         for device_type, params in person_data.items():
-            if device_type in ["Interferometer", "Optical Switch", "Time Tagger", "Laser"]:
+            if device_type in ["Interferometer", "Optical Switch", "Time Tagger", "Laser", "EDFA", "SHG"]:
                 devices[device_type] = create_device(device_type, params)
         person = Person(
             name=person_name,
@@ -55,6 +63,8 @@ def assign_persons_from_config(config):
             optical_switch=devices.get("Optical Switch"),
             time_tagger=devices.get("Time Tagger"),
             laser=devices.get("Laser"),
+            EDFA=devices.get("EDFA"),
+            SHG=devices.get("SHG"),
         )
         persons.append(person)
     return persons
@@ -63,11 +73,13 @@ def assign_persons_from_config(config):
 config_path = "config.yaml" # Adjust the path as needed
 config = load_config(config_path)
 persons = assign_persons_from_config(config)
+
+print(persons[2].SHG)
 # print(persons[0].interferometer.Interferometers["IntB"])
-Int = persons[0].interferometer.Interferometers["IntA"] #Tested:  B C D
-for i in range(20):
-   newV = 1 + 0.1 * i
-   Int.VsetCh(newV, 1)
-   print(newV)
-   sleep(1)
-Int.VsetCh(1, 1)
+# Int = persons[0].interferometer.Interferometers["IntA"] #Tested:  B C D
+# for i in range(20):
+#    newV = 1 + 0.1 * i
+#    Int.VsetCh(newV, 1)
+#    print(newV)
+#    sleep(1)
+# Int.VsetCh(1, 1)
