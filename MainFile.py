@@ -63,6 +63,11 @@ def assign_persons_from_config(config):
 config_path = "config.yaml" # Adjust the path as needed
 config = load_config(config_path)
 persons = assign_persons_from_config(config)
-print(persons[0])
-
-
+# print(persons[0].interferometer.Interferometers["IntB"])
+Int = persons[0].interferometer.Interferometers["IntD"]
+for i in range(20):
+   newV = 1 + 0.1 * i
+   Int.VsetCh(newV, 1)
+   print(newV)
+   sleep(1)
+Int.VsetCh(1, 1)

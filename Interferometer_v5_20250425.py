@@ -4,15 +4,15 @@ import time
 import os
 import matplotlib.pyplot as plt
 import serial
-
 from LADaq_v1 import LADAqBoard
 from supportingfunctions import SupportFunc
-
+import socket
 
 class InterferometerParams:
     def __init__(self, params, baudrate=9600, timeout=0.5):
         self.com_port = params.get('com_port')
         self.IP = params.get('IP')
+        self.target_port = params.get('target_port')
         self.baudrate = baudrate
         self.timeout = timeout
         self.device_connected = False
@@ -36,14 +36,24 @@ class InterferometerParams:
         self.V = params.get('V')
         self.VSrcCh = params.get('VSrcCh')
 
+
     def connect(self):
         if not self.device_connected or self.device==None: 
             print("Interferometer is not connected. Connecting now...")
             try:
-                self.device = serial.Serial(port=self.com_port, baudrate=self.baudrate, timeout=self.timeout)
+                if (self.IP):
+                    print(f"IP: {self.IP}, Target Port: {self.target_port}")
+                    self.device = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                    self.device.bind(("", self.target_port))
+                    # self.device.connect((self.IP, self.target_port))
+                    print(f"Successfully connected to {self.IP}:{self.target_port}")
+                else:
+                    self.device = serial.Serial(port=self.com_port, baudrate=self.baudrate, timeout=self.timeout)
+                    print(f"Interferometer is connected at {self.com_port}")
+                
                 self.device_connected = True
-                print(f"INTERFEROMETER: {self.device}")
-                print(f"Interferometer is connected at {self.com_port}")
+
+                # print(f"INTERFEROMETER: {self.device}")
                 time.sleep(0.1)  # Give some time for the device to initialize
             except serial.SerialException as e:
                 print(f"Failed to connect to Interferometer: {e}")
@@ -74,12 +84,19 @@ class InterferometerParams:
                 print("Could not set the voltage")
 
     def _send_command(self, command, start_time):
-        self.device.write(bytes(command, 'utf-8'))
+        if (self.IP):
+            # print(f"SENDING:{command}")
+            self.device.sendto(bytes(command, 'utf-8'), (self.IP, self.target_port))
+        else:
+            self.device.write(bytes(command, 'utf-8'))
         while True:
-            data = self.device.readline()
+            if (self.IP):
+                data, addr = self.device.recvfrom(1024)
+            else:
+                data = self.device.readline()
             dataStr = data.decode().strip()
             if dataStr == "+ok":
-                # print(f" Applied voltage {self.amplification*float(command.split()[2])}V, Command:{command.strip()}, running time: {time.time() - start_time:.5f}s")
+                print(f" Applied voltage {self.amplification*float(command.split()[2])}V, Command:{command.strip()}, running time: {time.time() - start_time:.5f}s")
                 break
             else:
                 print(f"Received data: {dataStr}")
@@ -87,8 +104,12 @@ class InterferometerParams:
                 break
 
 class Interferometer:
-    def __init__(self, data=None):
+    def __init__(self, data=None, filename=None):
         # self.filename = filename
+        if (filename):
+            with open(filename, 'r') as yaml_file:
+                data = yaml.safe_load(yaml_file)
+
         self.Interferometers = {}
         self.LADAqs = {}
         self.Connection = {}
@@ -959,7 +980,7 @@ if __name__ == "__main__":
     interferometer = Interferometer(filename='IntParams.yaml')
 
     # # Connect all LADAQs
-    interferometer.connect_LADAqs()
+    # interferometer.connect_LADAqs()
 
     # # Connect PowerMeter
     # pm = PowerMeter('USB0::0x1313::0x8078::P0023583::INSTR')

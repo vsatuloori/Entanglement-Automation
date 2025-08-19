@@ -1,11 +1,16 @@
 Alice: # Person name
 
   Interferometer: # device name
+
+    Connection: # Parameters
+      # LADAq2:
+      # - IntE
+      # - IntF
     Interferometers:
       IntA:
-        IntName: IntA
         com_port: Null
         IP: Null
+        IntName: IntA
         Out1: -1
         Out2: -5
         Phase0Voltage: 3.1
@@ -19,11 +24,9 @@ Alice: # Person name
         V: 3.67
         VSrcCh: 0
       IntB:
-        IntName: IntB
         com_port: Null
         IP: Null
-        # IP: 192.168.0.106
-        target_port: 8888
+        IntName: IntB
         Out1: -2
         Out2: -6
         Phase0Voltage: 3.1
@@ -35,12 +38,10 @@ Alice: # Person name
         Phase90Voltage: 3.41
         Phase90power: 0.0011899726666666664
         V: 3.67
-        VSrcCh: 1
+        VSrcCh: 0
       IntC:
         com_port: /dev/ttyACM0
         IP: Null
-        # IP: 192.168.0.104
-        target_port: 8880 # THESE MUST BE UNIQUE
         IntName: IntC
         Out1: -3
         Out2: -7
@@ -53,12 +54,10 @@ Alice: # Person name
         Phase90Voltage: 0.0
         Phase90power: 0.0
         V: 2
-        VSrcCh: 1
+        VSrcCh: 0
       IntD:
-        com_port: /dev/ttyACM0
-        # IP: Null
-        IP: 192.168.0.105
-        target_port: 8008 # THESE MUST BE UNIQUE
+        com_port: Null
+        IP: Null
         IntName: IntD
         Out1: -3
         Out2: -7
@@ -71,7 +70,7 @@ Alice: # Person name
         Phase90Voltage: 0.0
         Phase90power: 0.0
         V: 2.8
-        VSrcCh: 1
+        VSrcCh: 0
       IntE:
         com_port: Null
         IP: Null
@@ -104,9 +103,9 @@ Alice: # Person name
         Phase90power: 0.0011899726666666664
         V: 2.5
         VSrcCh: 0
-  # LADAqs:
-  #   LADAq2:
-  #     com_port: /dev/ttyACM0
+    # LADAqs:
+    #   LADAq2:
+    #     com_port: /dev/ttyACM0
 
   Optical Switch: # device (leave a space between devices)
     com_port: Null # Parameters
@@ -115,37 +114,37 @@ Alice: # Person name
     SW3: ON
     SW4: OFF
 
-  # Time Tagger: #device
-  #   Channels: # Parameters
-  #     Ch1:
-  #       ChannelID: 1
-  #       TriggerLevel: -0.07  # in volts
-  #       Deadtime: 100000  # in ps
-  #       DelayTime: 0  # in ps
-  #     Ch2:
-  #       ChannelID: -2
-  #       TriggerLevel: -0.07  # in volts
-  #       Deadtime: 100000  # in ps
-  #       DelayTime: 0  # in ps
-  #     Ch3:
-  #       ChannelID: -3
-  #       TriggerLevel: -0.07  # in volts
-  #       Deadtime: 100000  # in ps
-  #       DelayTime: 0  # in ps
-  #     Ch5:
-  #       ChannelID: -5
-  #       TriggerLevel: -0.07  # in volts
-  #       Deadtime: 100000  # in ps
-  #       DelayTime: 64500  # in ps
-  #     Clk:
-  #       ChannelID: -4
-  #       TriggerLevel: 0.4  # in volts
-  #       Deadtime: 100000  # in ps
-  #       DelayTime: 0  # in ps
-  #   DataAcquisitionTime: 1  # in seconds
+  Time Tagger: #device
+    Channels: # Parameters
+      Ch1:
+        ChannelID: 1
+        TriggerLevel: -0.07  # in volts
+        Deadtime: 100000  # in ps
+        DelayTime: 0  # in ps
+      Ch2:
+        ChannelID: -2
+        TriggerLevel: -0.07  # in volts
+        Deadtime: 100000  # in ps
+        DelayTime: 0  # in ps
+      Ch3:
+        ChannelID: -3
+        TriggerLevel: -0.07  # in volts
+        Deadtime: 100000  # in ps
+        DelayTime: 0  # in ps
+      Ch5:
+        ChannelID: -5
+        TriggerLevel: -0.07  # in volts
+        Deadtime: 100000  # in ps
+        DelayTime: 64500  # in ps
+      Clk:
+        ChannelID: -4
+        TriggerLevel: 0.4  # in volts
+        Deadtime: 100000  # in ps
+        DelayTime: 0  # in ps
+    DataAcquisitionTime: 1  # in seconds
 
   Laser:
-    port: ttyUSB1
+    port: ttyUSB0
     baud_rate: 9600
     min_pow: 600
     max_pow: 1700
@@ -154,34 +153,34 @@ Alice: # Person name
 
 Bob:
 
-  # Time Tagger: #device
-  #   Channels: # Parameters
-  #     Ch1:
-  #       ChannelID: 1
-  #       TriggerLevel: -0.07  # in volts
-  #       Deadtime: 100000  # in ps
-  #       DelayTime: 0  # in ps
-  #     Ch2:
-  #       ChannelID: -2
-  #       TriggerLevel: -0.07  # in volts
-  #       Deadtime: 100000  # in ps
-  #       DelayTime: 0  # in ps
-  #     Ch3:
-  #       ChannelID: -3
-  #       TriggerLevel: -0.07  # in volts
-  #       Deadtime: 100000  # in ps
-  #       DelayTime: 0  # in ps
-  #     Ch5:
-  #       ChannelID: -5
-  #       TriggerLevel: -0.07  # in volts
-  #       Deadtime: 100000  # in ps
-  #       DelayTime: 64500  # in ps
-  #     Clk:
-  #       ChannelID: -4
-  #       TriggerLevel: 0.4  # in volts
-  #       Deadtime: 100000  # in ps
-  #       DelayTime: 0  # in ps
-  #   DataAcquisitionTime: 1  # in seconds
+  Time Tagger: #device
+    Channels: # Parameters
+      Ch1:
+        ChannelID: 1
+        TriggerLevel: -0.07  # in volts
+        Deadtime: 100000  # in ps
+        DelayTime: 0  # in ps
+      Ch2:
+        ChannelID: -2
+        TriggerLevel: -0.07  # in volts
+        Deadtime: 100000  # in ps
+        DelayTime: 0  # in ps
+      Ch3:
+        ChannelID: -3
+        TriggerLevel: -0.07  # in volts
+        Deadtime: 100000  # in ps
+        DelayTime: 0  # in ps
+      Ch5:
+        ChannelID: -5
+        TriggerLevel: -0.07  # in volts
+        Deadtime: 100000  # in ps
+        DelayTime: 64500  # in ps
+      Clk:
+        ChannelID: -4
+        TriggerLevel: 0.4  # in volts
+        Deadtime: 100000  # in ps
+        DelayTime: 0  # in ps
+    DataAcquisitionTime: 1  # in seconds
 
   Optical Switch: # device
     com_port: Null # Parameters
@@ -191,6 +190,13 @@ Bob:
     SW4: OFF
 
 Charlie: # leave a space (like above) to seperate different persons
+  Laser:
+    port: ttyUSB0
+    baud_rate: 9600
+    min_pow: 600
+    max_pow: 1700
+    wavelength: 1550
+    power: 6
 
   Optical Switch: #device
     com_port: Null # Parameters
