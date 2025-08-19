@@ -13,7 +13,7 @@ EDFA control
 """
 
 class EDFAControl: 
-    def __init__(self, filename = None, port=None, baud_rate=9600):
+    def __init__(self, params=None, filename = None, port=None, baud_rate=9600):
         self.ser = serial.Serial()
         if filename:
             with open(filename, 'r') as yaml_file:
@@ -39,6 +39,14 @@ class EDFAControl:
                 self.max_cur = 890
                 self.ser.port = port
                 self.ser.baudrate = baud_rate
+        elif (params):
+            # edfa_params = settings[name]["EDFA"]
+            self.ser.port = params.get("port", port)
+            self.ser.baudrate = params.get("baud_rate", baud_rate)
+            self.current = int(params.get("pump_current", 0))
+            self.min_cur = float(params.get("min_cur", 0))
+            self.max_cur = float(params.get("max_cur", 890))
+            found = True
         else:
             self.current = 0
             self.port = port
