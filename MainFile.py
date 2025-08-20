@@ -13,10 +13,11 @@ from TimeTaggerFunctions import TT  # Import TimeTagger class
 from PPCL_Bare_Bones import LaserControl # Import Laser class
 from CWEntanglement.EDFAControl import EDFAControl # Import EDFA class
 from CWEntanglement.SHGScanTEC_v2 import SHGController # Import SHG class
+from CWEntanglement.yokogawa.yoAQ2212 import yokogawa
 import matplotlib.pyplot as plt
 
 class Person:
-    def __init__(self, name, interferometer, optical_switch, time_tagger, laser, EDFA, SHG):
+    def __init__(self, name, interferometer, optical_switch, time_tagger, laser, EDFA, SHG, yokogawa):
         self.name = name
         self.interferometer = interferometer
         self.optical_switch = optical_switch
@@ -24,6 +25,7 @@ class Person:
         self.laser = laser
         self.EDFA = EDFA
         self.SHG = SHG
+        self.yokogawa = yokogawa
 
 
 def load_config(config_path):
@@ -45,6 +47,8 @@ def create_device(device_type, params):
         return EDFAControl(params)
     elif device_type == "SHG":
         return SHGController(params)
+    elif device_type == "yokogawa":
+        return yokogawa(params)
     else:
         return None  
 
@@ -55,7 +59,7 @@ def assign_persons_from_config(config):
             continue
         devices = {}
         for device_type, params in person_data.items():
-            if device_type in ["Interferometer", "Optical Switch", "Time Tagger", "Laser", "EDFA", "SHG"]:
+            if device_type in ["Interferometer", "Optical Switch", "Time Tagger", "Laser", "EDFA", "SHG", "yokogawa"]:
                 devices[device_type] = create_device(device_type, params)
         person = Person(
             name=person_name,
@@ -65,21 +69,23 @@ def assign_persons_from_config(config):
             laser=devices.get("Laser"),
             EDFA=devices.get("EDFA"),
             SHG=devices.get("SHG"),
+            yokogawa=devices.get("yokogawa")
         )
         persons.append(person)
     return persons
 
 # Usage
-config_path = "config.yaml" # Adjust the path as needed
-config = load_config(config_path)
-persons = assign_persons_from_config(config)
+if __name__ == '__main__':
+    config_path = "config.yaml" # Adjust the path as needed
+    config = load_config(config_path)
+    persons = assign_persons_from_config(config)
 
-print(persons[2].SHG)
-# print(persons[0].interferometer.Interferometers["IntB"])
-# Int = persons[0].interferometer.Interferometers["IntA"] #Tested:  B C D
-# for i in range(20):
-#    newV = 1 + 0.1 * i
-#    Int.VsetCh(newV, 1)
-#    print(newV)
-#    sleep(1)
-# Int.VsetCh(1, 1)
+    print(persons[2].SHG)
+    # print(persons[0].interferometer.Interferometers["IntB"])
+    # Int = persons[0].interferometer.Interferometers["IntA"] #Tested:  B C D
+    # for i in range(20):
+    #    newV = 1 + 0.1 * i
+    #    Int.VsetCh(newV, 1)
+    #    print(newV)
+    #    sleep(1)
+    # Int.VsetCh(1, 1)

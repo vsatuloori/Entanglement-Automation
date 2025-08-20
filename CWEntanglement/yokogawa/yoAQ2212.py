@@ -21,12 +21,16 @@ from scipy.constants import c
 from tqdm import tqdm
 
 class yoAQ2212_frame_controller(visaInst):
-    def __init__(self, ipAddress, port, **kwargs):
+    def __init__(self, params=None, ipAddress=None, port=None, **kwargs):
         """
         :param ipAddress: ie. '10.7.0.13x'
         :param kwargs:
                      - offline: If True, then don't actually read/send data over visa
         """
+        if (params):
+            ipAddress = params["ip_addr"]
+            port = params["port"]
+
         super().__init__(ipAddress, **kwargs)
         self.ipAddress = ipAddress
         self.port = port
@@ -58,13 +62,16 @@ class yoAQ2212_frame_controller(visaInst):
             return self.write(msg)
 
 class yoAQ2212_laser(visaInst):
-    def __init__(self, frame_cont: yoAQ2212_frame_controller, slot, **kwargs):
+    def __init__(self, frame_cont: yoAQ2212_frame_controller, slot=None, params=None, **kwargs):
         """
         port, ipAddress,
         :param ipAddress: ie. '10.7.0.134'
         :param kwargs:
                      - offline: If True, then don't actually read/send data over visa
         """
+        if (params):
+            slot = params["slot"]
+
         super().__init__(frame_cont, **kwargs)
         self.slot = slot
         self.frame_cont = frame_cont
@@ -210,16 +217,21 @@ class yoAQ2212_laser(visaInst):
         return self.write(msg)
 
 class yoAQ2212_Attenuator(visaInst):
-    def __init__(self, frame_cont: yoAQ2212_frame_controller, slot, **kwargs):
+    def __init__(self, frame_cont: yoAQ2212_frame_controller, slot=None, atten=None, params=None, **kwargs):
         """
         port, ipAddress,
         :param ipAddress: ie. '10.7.0.134'
         :param kwargs:
                      - offline: If True, then don't actually read/send data over visa
         """
+        if (params):
+            self.slot = params["slot"]
+            atten = params["attenuation"]
+
         super().__init__(frame_cont, **kwargs)
         self.slot = slot
         self.frame_cont = frame_cont
+        self.setAtten(atten)
 
     def write(self, msg):
         return self.frame_cont.write(msg)
@@ -236,6 +248,7 @@ class yoAQ2212_Attenuator(visaInst):
     def setAtten(self, atten):
         msg = f'INP{self.slot}:ATT {atten} '  # set attenuation val in dB
         result = self.write(msg)
+        print(f'Attenuation on slot-{self.slot}: {atten} db')
         # time.sleep(5)
         return result
 
@@ -283,13 +296,16 @@ class yoAQ2212_Attenuator(visaInst):
         # time.sleep(4) you should wait at least 4 seconds between each toggle
 
 class yoAQ2212_Switch(visaInst):
-    def __init__(self, frame_cont: yoAQ2212_frame_controller, slot, **kwargs):
+    def __init__(self, frame_cont: yoAQ2212_frame_controller, slot=None, params=None, **kwargs):
         """
         port, ipAddress,
         :param ipAddress: ie. '10.7.0.134'
         :param kwargs:
                      - offline: If True, then don't actually read/send data over visa
         """
+        if (params):
+            slot = params["slot"]
+
         super().__init__(frame_cont, **kwargs)
         self.slot = slot
         self.frame_cont = frame_cont
@@ -322,13 +338,15 @@ class yoAQ2212_Switch(visaInst):
         return switch
 
 class yoAQ2212_PowerMeter(visaInst):
-    def __init__(self, frame_cont: yoAQ2212_frame_controller, slot, **kwargs):
+    def __init__(self, frame_cont: yoAQ2212_frame_controller, slot=None, params=None, **kwargs):
         """
         port, ipAddress,
         :param ipAddress: ie. '10.7.0.134'
         :param kwargs:
                      - offline: If True, then don't actually read/send data over visa
         """
+        if (params):
+            slot = params["slot"]
         super().__init__(frame_cont, **kwargs)
         self.slot = slot
         self.frame_cont = frame_cont
@@ -403,17 +421,30 @@ class yoAQ2212_PowerMeter(visaInst):
     #     msg = f'xxx{slot}:xxx:xxxx? '  # set calibration of power meter
     #     return state
 
+class yokogawa:
+    def __init__(self, params):
+        self.inst = yoAQ2212_frame_controller(params=params["Frame Controller"])  # attempts to autoconnect
+        self.laser = yoAQ2212_laser(frame_cont=self.inst, params=params["Laser"])
+        
+        self.attenuators = {}
+
+        for atten_name, settings in params['Attenuators'].items():
+            atten_obj = yoAQ2212_Attenuator(frame_cont=self.inst, params=settings)
+            self.attenuators[atten_name] = atten_obj
+
+        self.switch = yoAQ2212_Switch(frame_cont=self.inst, params=params["Switch"])
+        self.pwrmeter = yoAQ2212_PowerMeter(frame_cont=self.inst, params=params["Power Meter"])
 
 def test_routine_1(test_routine=True):
     # all controls must be in off position before starting
     data_test1 = np.zeros(10)
 
     try:
-        inst = yoAQ2212_frame_controller(ipAddress="10.7.0.134", port=50000)  # attempts to autoconnect
+        inst = yoAQ2212_frame_controller(ipAddress="192.168.0.145", port=50000)  # attempts to autoconnect
         laser = yoAQ2212_laser(frame_cont=inst, slot=1)
         atten1 = yoAQ2212_Attenuator(frame_cont=inst, slot=2)
         atten2 = yoAQ2212_Attenuator(frame_cont=inst, slot=3)
-        # atten3 = yoAQ2212_Attenuator(frame_cont=inst, slot=4)
+        atten3 = yoAQ2212_Attenuator(frame_cont=inst, slot=4)
         switch = yoAQ2212_Switch(frame_cont=inst, slot=5)
         pwrmeter = yoAQ2212_PowerMeter(frame_cont=inst, slot=6)
         print('Connected to Yokogawa AQ2212.')
@@ -555,10 +586,11 @@ def test_routine_1(test_routine=True):
             # disconnect from the devices
             inst.disconnect()
             print('Disconnected from Yokogawa AQ2212.')
-    except:
+    except Exception as e:
+        print(e)
         print('Failed to connect.')
 
-# if __name__ == '__main__':
-#     test_routine_1()
+if __name__ == '__main__':
+    test_routine_1()
 
 

@@ -234,3 +234,36 @@ Charlie: # leave a space (like above) to seperate different persons
         beta: 3450
         id: 1
         VsrcCh: 1
+
+  yokogawa:
+    Frame Controller:  
+      ip_addr: 192.168.0.145
+      port: 50000 # ???
+      
+      # Below are unused?
+      # com_port: COM14
+      baudrate: 9600
+      timeout: 0.5
+
+    Laser:
+      slot: 1
+
+      
+    Attenuators:
+        Atten1:
+          attenuation: #
+          slot: 2
+
+        Atten2:
+          attenuation: #
+          slot: 3
+
+        Atten3:
+          attenuation: #
+          slot: 4
+
+    Switch:
+      slot: 5
+
+    Power Meter:
+      slot: 6
