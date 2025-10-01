@@ -5,7 +5,15 @@ import time
 from Support.LaserSupport.PPCL550v7 import PPCL550
 
 class LaserControl:
-    def __init__(self, port, baud_rate=9600, min_pow=600, max_pow=1700, wavelength=1550,power=6):
+    def __init__(self, params=None, port=None, baud_rate=9600, min_pow=600, max_pow=1700, wavelength=1550,power=6):
+        if (params):
+            port = params["port"]
+            baud_rate = params["baud_rate"]
+            min_pow = params["min_pow"]
+            max_pow = params["max_pow"]
+            wavelength = params["wavelength"]
+            power = params["power"]
+        
         self.laser = PPCL550(port, baud_rate, min_pow=min_pow, max_pow=max_pow)
         self.rm = pyvisa.ResourceManager()
         self.C = 299792458  # Speed of light in m/s
@@ -17,7 +25,7 @@ class LaserControl:
         try:
             self.dev = self.laser.connect_laser()
             freq = np.round(self.C / self.wl * 1e-3, 3)
-            print(self.dev)
+            # print(self.dev)
             time.sleep(0.001)
             print(self.laser.NOP_register())
             failures = 0
@@ -67,9 +75,9 @@ class LaserControl:
 
 
 if __name__ == "__main__":
-    ports = ["/dev/ttyUSB1"]#, "COM14"]
+    ports = ["/dev/ttyUSB2"]#, "COM14"]
     for port in ports:
-        laser = LaserControl(port=port,power=10)
+        laser = LaserControl(port=port,wavelength=1550,power=10)
         laser.connect_laser()
         laser.turn_on(wait_time=3)
         laser.disconnect()

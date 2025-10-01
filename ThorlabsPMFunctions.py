@@ -18,6 +18,7 @@ class PowerMeter:
             return  # Exit initialization early
 
         # Automatically extract vendor_id and product_id
+        # match = re.search(r'USB0::([0-9A-Fa-f]+)::([0-9A-Fa-f]+)::', power_meter_id)
         match = re.search(r'USB0::0x([0-9A-Fa-f]+)::0x([0-9A-Fa-f]+)::', power_meter_id)
         if not match:
             raise ValueError("Failed to extract vendor_id and product_id from power_meter_id.")

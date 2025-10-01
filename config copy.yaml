@@ -1,0 +1,270 @@
+Alice: # Person name
+
+  Interferometer: # device name
+    Interferometers:
+      IntA:
+        IntName: IntA
+        # com_port: Null
+        com_port: /dev/ttyACM1
+        # IP: Null
+        IP: 192.168.0.107
+        target_port: 8819
+        Out1: -1
+        Out2: -5
+        Phase0Voltage: 3.1
+        Phase0power: 0.0005904458
+        Phase180Voltage: 3.67
+        Phase180power: 0.0017175367777777777
+        Phase270Voltage: 3.92
+        Phase270power: 0.0011574313333333334
+        Phase90Voltage: 3.41
+        Phase90power: 0.0011899726666666664
+        V: 3.67
+        VSrcCh: 1
+      IntB:
+        IntName: IntB
+        com_port: Null
+        # IP: Null
+        IP: 192.168.0.106
+        target_port: 8888 # THESE MUST BE UNIQUE
+        Out1: -2
+        Out2: -6
+        Phase0Voltage: 3.1
+        Phase0power: 0.0005904458
+        Phase180Voltage: 3.67
+        Phase180power: 0.0017175367777777777
+        Phase270Voltage: 3.92
+        Phase270power: 0.0011574313333333334
+        Phase90Voltage: 3.41
+        Phase90power: 0.0011899726666666664
+        V: 3.67
+        VSrcCh: 1
+      IntC:
+        com_port: /dev/ttyACM1
+        # IP: Null
+        IP: 192.168.0.104
+        target_port: 8880 # THESE MUST BE UNIQUE
+        IntName: IntC
+        Out1: -3
+        Out2: -7
+        Phase0Voltage: 0.0
+        Phase0power: 0.0
+        Phase180Voltage: 0.0
+        Phase180power: 0.0
+        Phase270Voltage: 0.0
+        Phase270power: 0.0
+        Phase90Voltage: 0.0
+        Phase90power: 0.0
+        V: 2
+        VSrcCh: 1
+      IntD:
+        com_port: /dev/ttyACM1
+        # IP: Null
+        IP: 192.168.0.105
+        target_port: 8818 # THESE MUST BE UNIQUE
+        IntName: IntD
+        Out1: -3
+        Out2: -7
+        Phase0Voltage: 3.100000000000001
+        Phase0power: 0.0011844089
+        Phase180Voltage: 3.7000000000000015
+        Phase180power: 2.39562769e-06
+        Phase270Voltage: 0.0
+        Phase270power: 0.0
+        Phase90Voltage: 0.0
+        Phase90power: 0.0
+        V: 2.8
+        VSrcCh: 1
+      IntE:
+        com_port: /dev/ttyACM1
+        IP: Null
+        IntName: IntE
+        Out1: 2
+        Out2: 3
+        Phase0Voltage: 2.9574999999999956
+        Phase0power: 0.001292980655
+        Phase180Voltage: 3.494999999999984
+        Phase180power: 1.570858017904762e-05
+        Phase270Voltage: 3.7249999999999788
+        Phase270power: 0.0006577415531100002
+        Phase90Voltage: 3.247499999999989
+        Phase90power: 0.0006577415531100002
+        V: 2.17
+        VSrcCh: 0
+      IntF:
+        com_port: /dev/ttyACM1
+        IP: Null
+        IntName: IntF
+        Out1: 5
+        Out2: 6
+        Phase0Voltage: 0.1
+        Phase0power: 0.0005904458
+        Phase180Voltage: 0.1
+        Phase180power: 0.0017175367777777777
+        Phase270Voltage: 0.1
+        Phase270power: 0.0011574313333333334
+        Phase90Voltage: 0.1
+        Phase90power: 0.0011899726666666664
+        V: 2.5
+        VSrcCh: 0
+  # LADAqs:
+  #   LADAq2:
+  #     com_port: /dev/ttyACM0
+
+  Optical Switch: # device (leave a space between devices)
+    com_port: Null # Parameters
+    SW1: ON
+    SW2: OFF
+    SW3: ON
+    SW4: OFF
+
+  # Time Tagger: #device
+  #   Channels: # Parameters
+  #     Ch1:
+  #       ChannelID: 1
+  #       TriggerLevel: -0.07  # in volts
+  #       Deadtime: 100000  # in ps
+  #       DelayTime: 0  # in ps
+  #     Ch2:
+  #       ChannelID: -2
+  #       TriggerLevel: -0.07  # in volts
+  #       Deadtime: 100000  # in ps
+  #       DelayTime: 0  # in ps
+  #     Ch3:
+  #       ChannelID: -3
+  #       TriggerLevel: -0.07  # in volts
+  #       Deadtime: 100000  # in ps
+  #       DelayTime: 0  # in ps
+  #     Ch5:
+  #       ChannelID: -5
+  #       TriggerLevel: -0.07  # in volts
+  #       Deadtime: 100000  # in ps
+  #       DelayTime: 64500  # in ps
+  #     Clk:
+  #       ChannelID: -4
+  #       TriggerLevel: 0.4  # in volts
+  #       Deadtime: 100000  # in ps
+  #       DelayTime: 0  # in ps
+  #   DataAcquisitionTime: 1  # in seconds
+
+  Laser:
+    port: "/dev/ttyUSB2"
+    baud_rate: 9600
+    min_pow: 600
+    max_pow: 1700
+    wavelength: 1540
+    power: 6
+
+Bob:
+
+  # Time Tagger: #device
+  #   Channels: # Parameters
+  #     Ch1:
+  #       ChannelID: 1
+  #       TriggerLevel: -0.07  # in volts
+  #       Deadtime: 100000  # in ps
+  #       DelayTime: 0  # in ps
+  #     Ch2:
+  #       ChannelID: -2
+  #       TriggerLevel: -0.07  # in volts
+  #       Deadtime: 100000  # in ps
+  #       DelayTime: 0  # in ps
+  #     Ch3:
+  #       ChannelID: -3
+  #       TriggerLevel: -0.07  # in volts
+  #       Deadtime: 100000  # in ps
+  #       DelayTime: 0  # in ps
+  #     Ch5:
+  #       ChannelID: -5
+  #       TriggerLevel: -0.07  # in volts
+  #       Deadtime: 100000  # in ps
+  #       DelayTime: 64500  # in ps
+  #     Clk:
+  #       ChannelID: -4
+  #       TriggerLevel: 0.4  # in volts
+  #       Deadtime: 100000  # in ps
+  #       DelayTime: 0  # in ps
+  #   DataAcquisitionTime: 1  # in seconds
+
+  Optical Switch: # device
+    com_port: Null # Parameters
+    SW1: ON
+    SW2: OFF
+    SW3: ON
+    SW4: OFF
+
+Charlie: # leave a space (like above) to seperate different persons
+
+  Optical Switch: #device
+    com_port: Null # Parameters
+    SW1: ON
+    SW2: OFF
+    SW3: ON
+    SW4: OFF
+
+  EDFA:
+    # port: Null
+    port: '/dev/ttyUSB2'
+    baud_rate: 9600
+    pump_current: 700
+    min_cur: 0
+    max_cur: 1000
+
+  SHG:
+    SHGController:
+      com_port: /dev/ttyACM0
+      ip_addr: null 
+      baudrate: 9600
+      timeout: 0.5
+      plotData: True
+
+    Wgs:
+      Wg1:   
+        id: 3822991
+        curr_temp: 44.5
+        min_temp: 20
+        max_temp: 70
+        beta: 3450
+        VsrcCh: 0 
+
+      Wg2:  
+        id: 3822990
+        curr_temp: 44.5
+        min_temp: 20
+        max_temp: 70
+        beta: 3450
+        id: 1
+        VsrcCh: 1
+
+  yokogawa:
+    Frame Controller:  
+      ip_addr: 192.168.0.145
+      port: 50000 # ???
+
+      # Below are unused?
+      # com_port: COM14
+      baudrate: 9600
+      timeout: 0.5
+
+    Laser:
+      slot: 1
+
+      
+    Attenuators:
+        Atten1:
+          attenuation: #
+          slot: 2
+
+        Atten2:
+          attenuation: #
+          slot: 3
+
+        Atten3:
+          attenuation: #
+          slot: 4
+
+    Switch:
+      slot: 5
+
+    Power Meter:
+      slot: 6

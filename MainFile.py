@@ -7,13 +7,14 @@ import datetime
 import shutil
 from time import sleep
 import numpy as np
+from ThorlabsPMFunctions import PowerMeter
 from Interferometer_v5_20250425 import Interferometer  # Import the Interferometer class
 from OpticalSwitch import OpticalSwitchDriver  # Import the OpticalSwitch class
 from TimeTaggerFunctions import TT  # Import TimeTagger class
 from PPCL_Bare_Bones import LaserControl # Import Laser class
 from CWEntanglement.EDFAControl import EDFAControl # Import EDFA class
 from CWEntanglement.SHGScanTEC_v2 import SHGController # Import SHG class
-from CWEntanglement.yokogawa.yoAQ2212 import yokogawa
+from CWEntanglement.yokogawa.yoAQ2212 import yokogawa # Import yokogawa class
 import matplotlib.pyplot as plt
 
 class Person:
@@ -53,7 +54,7 @@ def create_device(device_type, params):
         return None  
 
 def assign_persons_from_config(config):
-    persons = []
+    persons = {}
     for person_name, person_data in config.items():
         if not isinstance(person_data, dict):
             continue
@@ -71,18 +72,58 @@ def assign_persons_from_config(config):
             SHG=devices.get("SHG"),
             yokogawa=devices.get("yokogawa")
         )
-        persons.append(person)
+        persons[person_name] = person
     return persons
+
+def test1(persons):
+    print("\n\nBEGINNING TEST\n")
+    print("Connecting Laser...")
+    persons["Alice"].laser.connect_laser()
+    persons["Alice"].laser.turn_on()
+
+    print("Connecting EDFA...")
+    persons["Charlie"].EDFA.connect(set=True)
+
+    print("Connecting Power Meter...")
+    power_meter = PowerMeter(power_meter_id='USB0::4883::32888::P0023583::0::INSTR', wavelength=770)
+
+    print("Connecting SHG...")
+    persons["Charlie"].SHG.connect()
+    persons["Charlie"].SHG.SetTemperature(channel=1, temperature=44)
+    # persons["Charlie"].SHG.SHGScan(power_meter, channel=1)
+    
+
 
 # Usage
 if __name__ == '__main__':
     config_path = "config.yaml" # Adjust the path as needed
     config = load_config(config_path)
     persons = assign_persons_from_config(config)
+    
+    persons["Alice"].laser.connect_laser()
+    persons["Alice"].laser.turn_on()
 
-    print(persons[2].SHG)
+    interferometer = persons["Alice"].interferometer
+
+    # test1(persons)
+
+    # print(persons["Charlie"].SHG)
     # print(persons[0].interferometer.Interferometers["IntB"])
-    # Int = persons[0].interferometer.Interferometers["IntA"] #Tested:  B C D
+    Int = persons["Alice"].interferometer.Interferometers["IntA"] #Tested:  B C D
+    interferometer.CharaterizeInterferometers(
+        SupportingFuncs=SupportFunc(),
+        interferometer_list=[interferometer.IntE],   # <<<< clean access ✅
+        voltage_range=[2.75, 3.8],
+        voltage_source=interferometer.get_LADAq_for_interferometer('IntE'),
+        Measurement_Inst=pm,
+        step_size=0.005,
+        tolerance=0.05,
+        UpdateVoltage=True,
+        plotVoltagePower=True,
+        measurement_function = "measure_power",
+        plot_live = True,
+        sleep_time = 1
+    )
     # for i in range(20):
     #    newV = 1 + 0.1 * i
     #    Int.VsetCh(newV, 1)

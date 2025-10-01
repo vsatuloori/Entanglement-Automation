@@ -41,6 +41,7 @@ class SHGController:
                     break
         elif (params):
             shg_params = params["SHGController"]
+            plotData = shg_params["plotData"]
             self.com_port = shg_params.get("com_port", com_port)
             self.baudrate = shg_params.get("baudrate", baudrate)
             self.timeout = shg_params.get("timeout", timeout)
@@ -72,8 +73,6 @@ class SHGController:
         self.plotData = plotData
         self.Supportfunctions = SupportFunc()
         self.last_voltage = 0  # Start with 0V internally
-
-        self.device = self.connect()
 
     def connect(self):
         # if not self.is_device_connected():

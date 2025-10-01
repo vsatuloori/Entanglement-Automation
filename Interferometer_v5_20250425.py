@@ -109,10 +109,13 @@ class Interferometer:
         if (filename):
             with open(filename, 'r') as yaml_file:
                 data = yaml.safe_load(yaml_file)
+                data = data["Alice"]["Interferometer"]
 
         self.Interferometers = {}
         self.LADAqs = {}
         self.Connection = {}
+
+        self.filename = filename
 
         if data:
             self.load_data(data)
@@ -215,7 +218,7 @@ class Interferometer:
         return None
 
     
-    def SetIntPhase(self, interferometer_name, voltage_source= None, voltage= None, sleep_time = 0.1):
+    def SetIntPhase(self, interferometer_name, voltage= None, sleep_time = 0.1):
         """Set the voltage of the specified interferometer."""
         # If given an object, find its label
         if isinstance(interferometer_name, InterferometerParams):
@@ -230,10 +233,8 @@ class Interferometer:
         else:
             interferometer_label = interferometer_name
 
-        interferometer = self.Interferometers[interferometer_label]
-
-        if voltage_source is None:
-            voltage_source = self.Interferometers[interferometer_name]
+        interferometer = self.Interferometers[interferometer_name]
+        # print(f"\n\n{interferometer}\n\n")
 
         try:
             Vmaxstep = 0.005
@@ -245,13 +246,13 @@ class Interferometer:
 
             # Gradually adjust voltage
             while abs(np.round(voltage - interferometer.V, 3)) > Vmaxstep:
-                voltage_source.VsetCh(interferometer.V, interferometer.VSrcCh)
+                self.Interferometers[interferometer_name].VsetCh(interferometer.V, interferometer.VSrcCh)
                 print(f"Interferometer voltage is set to:{interferometer.V}")
                 interferometer.V += Vstep
                 time.sleep(sleep_time)
 
             interferometer.V = voltage
-            voltage_source.VsetCh(voltage, interferometer.VSrcCh)
+            self.Interferometers[interferometer_name].VsetCh(voltage, interferometer.VSrcCh)
             time.sleep(sleep_time)
             self.save_yaml(self.filename)
 
@@ -338,7 +339,7 @@ class Interferometer:
             return None
 
         
-    def sweep_voltage_and_measure_power(self, voltage_range, voltage_source, Interferometer_name, Measurement_Inst, step_size=0.02, *args, **kwargs):
+    def sweep_voltage_and_measure_power(self, voltage_range, Interferometer_name, Measurement_Inst, step_size=0.02, *args, **kwargs):
         voltage_power_data = []
 
         plot_live = kwargs.pop('plot_live', False)
@@ -349,13 +350,13 @@ class Interferometer:
             plt.ion()
             fig, ax = plt.subplots()
             line, = ax.plot([], [], 'bo-')
-            ax.set_title(f"Voltage vs Feedback for {Interferometer_name.IntName}")
+            ax.set_title(f"Voltage vs Feedback for {Interferometer_name}")
             ax.set_xlabel("Voltage (V)")
             ax.set_ylabel("Feedback Value")
             ax.grid(True)
 
         for voltage in np.arange(voltage_range[0], voltage_range[1], step_size):
-            self.SetIntPhase(Interferometer_name, voltage_source, voltage, sleep_time)
+            self.SetIntPhase(Interferometer_name, voltage, sleep_time)
             time.sleep(0.3)
             feedback_value = self.feedbackSignal(Measurement_Inst, *args, **kwargs)
             voltage_power_data.append((voltage, feedback_value))
@@ -375,7 +376,7 @@ class Interferometer:
 
         return voltage_power_data
 
-    def CharaterizeInterferometers(self, SupportingFuncs, interferometer_list, voltage_range=(0, 5), voltage_source=None, Measurement_Inst=None, step_size=0.02, tolerance=0.01, UpdateVoltage=True, plotVoltagePower=True,  *args, **kwargs):
+    def CharaterizeInterferometers(self, SupportingFuncs, interferometer_list, voltage_range=(0, 5), Measurement_Inst=None, step_size=0.02, tolerance=0.01, UpdateVoltage=True, plotVoltagePower=True,  *args, **kwargs):
         """
         Optimize interferometer phase by sweeping through a voltage range.
 
@@ -383,7 +384,6 @@ class Interferometer:
             SupportingFuncs: Supporting functions object (for finding extrema, etc.)
             interferometer_list: Single InterferometerParams object OR list of InterferometerParams objects
             voltage_range (tuple): Voltage range to sweep (start, stop)
-            voltage_source: Voltage source object
             Measurement_Inst: Measurement instrument (power meter or time tagger)
             step_size (float): Step size for sweeping voltage
             tolerance (float): Tolerance used when finding extrema
@@ -395,53 +395,52 @@ class Interferometer:
             interferometer_list = [interferometer_list]
 
         for interferometer_obj in interferometer_list:
-            try:
-                # Find the label dynamically for printing
-                interferometer_label = None
-                for name, obj in self.__dict__.items():
-                    if obj is interferometer_obj:
-                        interferometer_label = name
-                        break
+            # try:
+            # Find the label dynamically for printing
+            interferometer_label = None
+            for name, obj in self.__dict__.items():
+                if obj is interferometer_obj:
+                    interferometer_label = name
+                    break
 
-                if interferometer_label is None:
-                    interferometer_label = str(interferometer_obj)  # fallback to object print
+            if interferometer_label is None:
+                interferometer_label = str(interferometer_obj)  # fallback to object print
 
-                print(f"\n--- Starting optimization for {interferometer_label} ---")
+            print(f"\n--- Starting optimization for {interferometer_label} ---")
 
-                # Sweep voltage and measure power
-                voltage_power_data = self.sweep_voltage_and_measure_power(
-                    voltage_range=voltage_range,
-                    step_size=step_size,
-                    voltage_source=voltage_source,
-                    Interferometer_name=interferometer_obj,
-                    Measurement_Inst=Measurement_Inst,
-                    *args, **kwargs
-                )
+            # Sweep voltage and measure power
+            voltage_power_data = self.sweep_voltage_and_measure_power(
+                voltage_range=voltage_range,
+                step_size=step_size,
+                Interferometer_name=interferometer_label,
+                Measurement_Inst=Measurement_Inst,
+                *args, **kwargs
+            )
 
-                # Find the extrema
-                # supportfunc = SupportingFuncs()  # Instantiate
-                min_voltages, max_voltages = SupportingFuncs.find_extrema(voltage_power_data, tolerance)
+            # Find the extrema
+            # supportfunc = SupportingFuncs()  # Instantiate
+            min_voltages, max_voltages = SupportingFuncs.find_extrema(voltage_power_data, tolerance)
 
-                # Print results
-                print(f"Results for {interferometer_label}:")
-                print(f"Min Voltages: {min_voltages}")
-                print(f"Max Voltages: {max_voltages}")
+            # Print results
+            print(f"Results for {interferometer_label}:")
+            print(f"Min Voltages: {min_voltages}")
+            print(f"Max Voltages: {max_voltages}")
 
-                # Update the interferometer voltages based on the extrema
-                if UpdateVoltage:
-                    self.UpdateIntVoltages(voltage_power_data, min_voltages, max_voltages, interferometer_obj)
+            # Update the interferometer voltages based on the extrema
+            if UpdateVoltage:
+                self.UpdateIntVoltages(voltage_power_data, min_voltages, max_voltages, interferometer_obj)
 
-                # Save after each optimization
-                self.save_yaml(self.filename)
+            # Save after each optimization
+            self.save_yaml(self.filename)
 
-                # Plot the scan
-                if plotVoltagePower:
-                    self.plot_voltage_vs_power(voltage_power_data)
+            # Plot the scan
+            if plotVoltagePower:
+                self.plot_voltage_vs_power(voltage_power_data)
 
-                print(f"--- Finished Characterization for {interferometer_label} ---\n")
+            print(f"--- Finished Characterization for {interferometer_label} ---\n")
 
-            except Exception as e:
-                print(f"Error during Characterization for {interferometer_label}: {e}")
+            # except Exception as e:
+            #     print(f"Error during Characterization for {interferometer_label}: {e}")
 
     def UpdateIntVoltages(self, voltage_power_data, min_voltages, max_voltages, interferometer_obj):
         """Update the voltages for Phase0, Phase90, Phase180, and Phase270 based on the optimization."""
@@ -540,7 +539,6 @@ class Interferometer:
         initial_voltage,
         target_power,
         mode,
-        voltage_source,
         interferometer_obj,
         Measurement_Inst,
         measurement_function,
@@ -588,7 +586,7 @@ class Interferometer:
         for it in range(1, max_iterations+1):
             # 1) slope estimate
             v_test = float(np.clip(curV + delta, Vmin, Vmax))
-            self.SetIntPhase(interferometer_obj, voltage_source, v_test)
+            self.SetIntPhase(interferometer_obj, v_test)
             P_test = measure_stable()
             slope = (P_test - P_prev)/(v_test - curV) if abs(v_test - curV)>1e-8 else 0.0
 
@@ -616,7 +614,7 @@ class Interferometer:
             print(f"[GD {it}] proposed={proposed:.4f}, clamped→{newV:.4f}, slope={slope:.4e}")
 
             # 5) apply & measure new
-            self.SetIntPhase(interferometer_obj, voltage_source, newV)
+            self.SetIntPhase(interferometer_obj, newV)
             P_new = measure_stable()
 
             # 6) decide accept/reject
@@ -660,7 +658,6 @@ class Interferometer:
     def OptimizeIntPhase(
         self,
         target_power,
-        voltage_source,
         interferometer_obj,
         Measurement_Inst=None,
         approx_voltage=None,
@@ -716,7 +713,6 @@ class Interferometer:
             initial_voltage=initV,
             target_power=numeric_target,
             mode=mode,
-            voltage_source=voltage_source,
             interferometer_obj=interferometer_obj,
             Measurement_Inst=Measurement_Inst,
             measurement_function=kwargs.pop('measurement_function', 'measure_power'),
@@ -784,7 +780,6 @@ class Interferometer:
     def InterferometerRepeatabilityTest(
         self,
         interferometer_obj,
-        voltage_source,
         Measurement_Inst,
         cycles=1,
         measurement_function="measure_power",
@@ -804,8 +799,6 @@ class Interferometer:
         ----------
         interferometer_obj : InterferometerParams
             The interferometer to test (e.g., self.IntE).
-        voltage_source : object
-            The LADAqBoard channel for setting voltages.
         Measurement_Inst : object
             The measurement instrument (power meter, time tagger, etc.).
         cycles : int, default=1
@@ -831,17 +824,17 @@ class Interferometer:
         results = []
         for cycle in range(1, cycles + 1):
             # 1) Phase0 initial
-            self.SetIntPhase(interferometer_obj, voltage_source, interferometer_obj.Phase0Voltage)
+            self.SetIntPhase(interferometer_obj, interferometer_obj.Phase0Voltage)
             time.sleep(wait_time)
             P0_initial = self.feedbackSignal(Measurement_Inst, *args, **kwargs)
             
             # 2) Phase180
-            self.SetIntPhase(interferometer_obj, voltage_source, interferometer_obj.Phase180Voltage)
+            self.SetIntPhase(interferometer_obj, interferometer_obj.Phase180Voltage)
             time.sleep(wait_time)
             P180 = self.feedbackSignal(Measurement_Inst, *args, **kwargs)
             
             # 3) Return to Phase0
-            self.SetIntPhase(interferometer_obj, voltage_source, interferometer_obj.Phase0Voltage)
+            self.SetIntPhase(interferometer_obj, interferometer_obj.Phase0Voltage)
             time.sleep(wait_time)
             P0_return = self.feedbackSignal(Measurement_Inst, *args, **kwargs)
             
@@ -901,9 +894,8 @@ class Interferometer:
         from datetime import datetime
 
         # Set voltage
-        voltage_source = self.get_LADAq_for_interferometer(interferometer_obj)
         if voltage is not None:
-          self.SetIntPhase(interferometer_obj, voltage_source=voltage_source, voltage=voltage)
+          self.SetIntPhase(interferometer_obj, voltage=voltage)
           print(f"\n--- Starting stability monitoring for {interferometer_obj.IntName} at {voltage:.2f} V ---")
         else:
           print(f"\n--- Starting stability monitoring for {interferometer_obj.IntName} at previously applied voltage ---")
@@ -977,43 +969,40 @@ if __name__ == "__main__":
 
     # Initialize
     # interferometer = Interferometer(filename='IntParams.yaml')
-    interferometer = Interferometer(filename='IntParams.yaml')
+    interferometer = Interferometer(filename='config.yaml')
 
     # # Connect all LADAQs
     # interferometer.connect_LADAqs()
 
     # # Connect PowerMeter
-    # pm = PowerMeter('USB0::0x1313::0x8078::P0023583::INSTR')
-    # # print(f"voltage_source:{interferometer.get_LADAq_for_interferometer(interferometer.IntE)}")
+    pm = PowerMeter('USB0::0x1313::0x8078::P0023583::INSTR')
 
     interferometer_obj = interferometer.IntE
-    interferometer.SetIntPhase(interferometer_name=interferometer_obj, voltage=interferometer_obj.Phase90Voltage)
+    # interferometer.SetIntPhase(interferometer_name=interferometer_obj, voltage=interferometer_obj.Phase90Voltage)
     # # interferometer.SetIntPhase(interferometer_name=interferometer.IntD, voltage=2.8)
     # print(f"Measured_power: {pm.measure_power(N=10)}")
 
 
     # Characterize a single interferometer (e.g., IntE)
-    # interferometer.CharaterizeInterferometers(
-    #     SupportingFuncs=SupportFunc(),
-    #     interferometer_list=[interferometer.IntE],   # <<<< clean access ✅
-    #     voltage_range=[2.75, 3.8],
-    #     voltage_source=interferometer.get_LADAq_for_interferometer('IntE'),
-    #     Measurement_Inst=pm,
-    #     step_size=0.005,
-    #     tolerance=0.05,
-    #     UpdateVoltage=True,
-    #     plotVoltagePower=True,
-    #     measurement_function = "measure_power",
-    #     plot_live = True,
-    #     sleep_time = 1
-    # )
+    interferometer.CharaterizeInterferometers(
+        SupportingFuncs=SupportFunc(),
+        interferometer_list=[interferometer.Interferometers["IntA"]],   # <<<< clean access ✅
+        voltage_range=[2.75, 3.8],
+        Measurement_Inst=pm,
+        step_size=0.005,
+        tolerance=0.05,
+        UpdateVoltage=True,
+        plotVoltagePower=True,
+        measurement_function = "measure_power",
+        plot_live = True,
+        sleep_time = 1
+    )
 
     # Characterize multiple interferometers together (e.g., IntE and IntF)
     # interferometer.CharaterizeInterferometers(
     #     SupportingFuncs=SupportFunc,
     #     interferometer_list=[interferometer.IntE, interferometer.IntF],
     #     voltage_range=(2, 5),
-    #     voltage_source=None,
     #     Measurement_Inst=pm,
     #     step_size=0.05,
     #     tolerance=0.01,
@@ -1035,7 +1024,6 @@ if __name__ == "__main__":
     #     SupportingFuncs=SupportFunc(),
     #     interferometer_list=[interferometer.IntF],
     #     voltage_range=(2, 5),
-    #     voltage_source=interferometer.get_LADAq_for_interferometer('IntF'),
     #     Measurement_Inst=Measurement_Inst,  # This is your TimeTaggerFunctions object
     #     step_size=0.01,
     #     tolerance=0.05,
@@ -1061,7 +1049,6 @@ if __name__ == "__main__":
 
     # optimal_voltage = interferometer.OptimizeIntPhase(
     #     target_power="maximum",
-    #     voltage_source=interferometer.get_LADAq_for_interferometer(intferferometer_obj),
     #     interferometer_obj=intferferometer_obj,
     #     Measurement_Inst=pm,
     #     measurement_function='measure_power',  # tells feedbackSignal which method to call
@@ -1099,7 +1086,6 @@ if __name__ == "__main__":
 
     # results = interferometer.InterferometerRepeatabilityTest(
     #     interferometer_obj=interferometer.IntE,
-    #     voltage_source=interferometer.get_LADAq_for_interferometer('IntE'),
     #     Measurement_Inst=pm,
     #     cycles=5,
     #     measurement_function="measure_power",
