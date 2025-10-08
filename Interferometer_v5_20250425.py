@@ -62,7 +62,7 @@ class InterferometerParams:
             print("Interferometer is already connected.")
         return self.device
     
-    def VsetCh(self, voltage, channel):
+    def VsetCh(self, voltage, channel, sleep_time=0.1):
             try:
                 if not self.device_connected:
                     print("Interferometer not initialized, attempting to connect...")
@@ -76,6 +76,7 @@ class InterferometerParams:
                     command = f"Vset {channel} {DACvoltage}\n"
                     start_time = time.time()
                     self._send_command(command, start_time)
+                    time.sleep(sleep_time)
                 else:
                     print(f"Voltage set to channel {channel} is {voltage}V exceeds the maximum limit of {self.maxvoltage}V \n Not changing the previous voltage")  
 
@@ -540,6 +541,7 @@ class Interferometer:
         target_power,
         mode,
         interferometer_obj,
+        interferometer_name,
         Measurement_Inst,
         measurement_function,
         initial_learning_rate,
@@ -568,7 +570,7 @@ class Interferometer:
 
         curV = float(np.clip(initial_voltage, Vmin, Vmax))
         lr   = initial_learning_rate
-        delta = 0.05#min_step_size
+        delta = 0.005#min_step_size
 
         kwargs.setdefault("measurement_function", measurement_function)
 
@@ -581,14 +583,16 @@ class Interferometer:
                 if p1 and p1>0 and abs(p2-p1)/p1 < 0.05:
                     return p2
 
+        self.SetIntPhase(interferometer_name, curV)
         P_prev = measure_stable()
 
         for it in range(1, max_iterations+1):
             # 1) slope estimate
             v_test = float(np.clip(curV + delta, Vmin, Vmax))
-            self.SetIntPhase(interferometer_obj, v_test)
+            self.SetIntPhase(interferometer_name, v_test)
             P_test = measure_stable()
             slope = (P_test - P_prev)/(v_test - curV) if abs(v_test - curV)>1e-8 else 0.0
+
 
             # 2) compute raw step
             if mode == 'minimum':
@@ -608,21 +612,26 @@ class Interferometer:
             else:
                 step = raw_step
 
+            print(f"STEP:{step}")
+
             # 4) propose & clamp
             proposed = curV + step
             newV     = float(np.clip(proposed, Vmin, Vmax))
             print(f"[GD {it}] proposed={proposed:.4f}, clamped→{newV:.4f}, slope={slope:.4e}")
 
             # 5) apply & measure new
-            self.SetIntPhase(interferometer_obj, newV)
+            self.SetIntPhase(interferometer_name, newV)
+            print(f"#########\n NEW VOLTAGE: {newV}\n#########")
             P_new = measure_stable()
 
             # 6) decide accept/reject
             if mode == 'minimum':
                 improved = (P_new < P_prev)
+                err_rel = P_new - P_prev
                 new_err_rel = P_new - P_prev
             elif mode == 'maximum':
                 improved = (P_new > P_prev)
+                err_rel = P_new - P_prev
             else:
                 new_err_rel = (P_new - target_power)/target_power
                 improved = (abs(new_err_rel) < abs(err_rel))
@@ -635,6 +644,7 @@ class Interferometer:
                     err_rel = new_err_rel
             else:
                 print(f"[GD {it}] no improvement, halving lr")
+                print(err_rel)
                 lr *= 0.5
 
             # 7) convergence?
@@ -645,8 +655,10 @@ class Interferometer:
             #     print(f"[GD] extremum found at {curV:.4f} V, P={P_prev:.6f}")
             #     return curV
 
-            if (abs(err_rel) < tolerance or (abs(err_rel)*target_power < power_tolerance)):
-                print(f"[GD] converged at {curV:.4f} V (rel_err={err_rel*100:.2f}%)")
+            # if (abs(err_rel) < tolerance or (abs(err_rel)*target_power < power_tolerance)):
+            if (abs(err_rel) < tolerance):
+                print(f"RELATIVE ERROR: {err_rel}")
+                print(f"[GD] converged at {curV:.10f} V (rel_err={err_rel*100:.2f}%)")
                 return curV
 
 
@@ -665,7 +677,7 @@ class Interferometer:
         tolerance=0.01,
         power_tolerance = 1e-5, 
         max_iterations=100,
-        min_step_size=0.005,
+        min_step_size=0.0005,
         *args,
         **kwargs
     ):
@@ -714,6 +726,7 @@ class Interferometer:
             target_power=numeric_target,
             mode=mode,
             interferometer_obj=interferometer_obj,
+            interferometer_name=interferometer_obj.IntName,
             Measurement_Inst=Measurement_Inst,
             measurement_function=kwargs.pop('measurement_function', 'measure_power'),
             initial_learning_rate=initial_learning_rate,
@@ -971,32 +984,30 @@ if __name__ == "__main__":
     # interferometer = Interferometer(filename='IntParams.yaml')
     interferometer = Interferometer(filename='config.yaml')
 
-    # # Connect all LADAQs
-    # interferometer.connect_LADAqs()
-
     # # Connect PowerMeter
     pm = PowerMeter('USB0::0x1313::0x8078::P0023583::INSTR')
 
-    interferometer_obj = interferometer.IntE
+    # interferometer_obj = interferometer.IntE
     # interferometer.SetIntPhase(interferometer_name=interferometer_obj, voltage=interferometer_obj.Phase90Voltage)
     # # interferometer.SetIntPhase(interferometer_name=interferometer.IntD, voltage=2.8)
     # print(f"Measured_power: {pm.measure_power(N=10)}")
 
-
-    # Characterize a single interferometer (e.g., IntE)
-    interferometer.CharaterizeInterferometers(
-        SupportingFuncs=SupportFunc(),
-        interferometer_list=[interferometer.Interferometers["IntA"]],   # <<<< clean access ✅
-        voltage_range=[2.75, 3.8],
-        Measurement_Inst=pm,
-        step_size=0.005,
-        tolerance=0.05,
-        UpdateVoltage=True,
-        plotVoltagePower=True,
-        measurement_function = "measure_power",
-        plot_live = True,
-        sleep_time = 1
-    )
+    #########################################################
+    ### Characterize a single interferometer (e.g., IntA) ###
+    #########################################################
+    # interferometer.CharaterizeInterferometers(
+    #     SupportingFuncs=SupportFunc(),
+    #     interferometer_list=[interferometer.Interferometers["IntA"]],   # <<<< clean access ✅
+    #     voltage_range=[2.75, 3.8],
+    #     Measurement_Inst=pm,
+    #     step_size=0.005,
+    #     tolerance=0.05,
+    #     UpdateVoltage=True,
+    #     plotVoltagePower=True,
+    #     measurement_function = "measure_power",
+    #     plot_live = True,
+    #     sleep_time = 1
+    # )
 
     # Characterize multiple interferometers together (e.g., IntE and IntF)
     # interferometer.CharaterizeInterferometers(
@@ -1044,20 +1055,22 @@ if __name__ == "__main__":
 
 
     ##### ===== Optimizing interferometers to a target power ===== #####
-    # intferferometer_obj = interferometer.IntE
+    intferferometer_obj = interferometer.Interferometers["IntA"]
+    # intferferometer_obj.VsetCh(1,1)
     # target_power = interferometer_obj.Phase180power
 
-    # optimal_voltage = interferometer.OptimizeIntPhase(
-    #     target_power="maximum",
-    #     interferometer_obj=intferferometer_obj,
-    #     Measurement_Inst=pm,
-    #     measurement_function='measure_power',  # tells feedbackSignal which method to call
-    #     N=100,                                   # passed through to measure_power(N=...)
-    #     initial_learning_rate=0.1,
-    #     tolerance=0.03,
-    #     power_tolerance = 1e-5,
-    #     max_iterations=50
-    # )
+    optimal_voltage = interferometer.OptimizeIntPhase(
+        target_power="maximum",
+        interferometer_obj=intferferometer_obj,
+        Measurement_Inst=pm,
+        measurement_function='measure_power',  # tells feedbackSignal which method to call
+        N=100,                                   # passed through to measure_power(N=...)
+        initial_learning_rate=1,
+        # initial_learning_rate=0.3,
+        tolerance=1e-5,
+        power_tolerance = 1e-5,
+        max_iterations=50
+    )
 
     # print(f"Reached {target_power:.3f} at V = {optimal_voltage:.4f} V")
 
@@ -1067,17 +1080,17 @@ if __name__ == "__main__":
     ## Stability checking of the interferometer 
 
     # interferometer.SetIntPhase(interferometer_name=interferometer_obj, voltage=interferometer_obj.Phase90Voltage, sleep_time = 0.5)
-    # time.sleep(30)
-    # interferometer.monitor_stability(
-    #     interferometer_obj=interferometer.IntE,
-    #     power_meter=pm,
-    #     voltage=None,
-    #     duration_minutes=1,
-    #     interval_seconds=0.1,
-    #     N=100,
-    #     save_data=True,
-    #     plot_live=True  # <- enable or disable live plot
-    # )
+    time.sleep(30)
+    interferometer.monitor_stability(
+        interferometer_obj=intferferometer_obj,
+        power_meter=pm,
+        voltage=None,
+        duration_minutes=2,
+        interval_seconds=0.1,
+        N=100,
+        save_data=True,
+        plot_live=True  # <- enable or disable live plot
+    )
 
 
     ### Interferometer repeatability test ###

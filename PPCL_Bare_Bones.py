@@ -75,12 +75,13 @@ class LaserControl:
 
 
 if __name__ == "__main__":
-    ports = ["/dev/ttyUSB2"]#, "COM14"]
+    ports = ["/dev/ttyUSB0"]#, "COM14"]
+    # ports = ["/dev/ttyUSB2"]#, "COM14"]
     for port in ports:
         laser = LaserControl(port=port,wavelength=1550,power=10)
         laser.connect_laser()
         laser.turn_on(wait_time=3)
-        laser.disconnect()
+        # laser.disconnect()
         
         # freq = np.round(laser.C / 1530 * 1e-3, 3)
         # print(laser.laser.write_freq(freq))
@@ -89,5 +90,5 @@ if __name__ == "__main__":
         # freq = np.round(laser.C / 1560 * 1e-3, 3)
         # print(laser.laser.write_freq(freq))
 
-        # laser.turn_off()
-        # laser.disconnect()
+        laser.turn_off()
+        laser.disconnect()

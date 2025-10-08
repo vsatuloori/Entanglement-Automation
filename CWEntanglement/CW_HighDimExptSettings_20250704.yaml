@@ -1,0 +1,173 @@
+ChannelMappings:
+  Alice:
+    X:
+      Channels:
+      - Ch2
+      - Ch3
+      IntName: IntE
+      IntVoltage: Phase0Voltage
+    Y:
+      Channels:
+      - Ch2
+      - Ch3
+      IntName: IntE
+      IntVoltage: Phase90Voltage
+    Z:
+      Channels:
+      - Ch2
+      IntName: null
+      IntVoltage: null
+  Bob:
+    X:
+      Channels:
+      - Ch5
+      - Ch6
+      IntName: IntF
+      IntVoltage: Phase0Voltage
+    Y:
+      Channels:
+      - Ch5
+      - Ch6
+      IntName: IntF
+      IntVoltage: Phase90Voltage
+    Z:
+      Channels:
+      - Ch5
+      IntName: null
+      IntVoltage: null
+  Clk:
+  - Ch7
+
+
+Connection:
+  LADAq2:
+  - IntE
+  - IntF
+  LADAqSHG:
+  - SHGCrystal
+
+
+InterferometerSettings:
+  Alice:
+    X:
+      IntName: IntE
+      Phase: Phase0Voltage
+    Y:
+      IntName: IntE
+      Phase: Phase90Voltage
+    Z:
+      IntName: null
+      Phase: null
+  Bob:
+    X:
+      IntName: IntF
+      Phase: Phase0Voltage
+    Y:
+      IntName: IntF
+      Phase: Phase90Voltage
+    Z:
+      IntName: null
+      Phase: null
+
+
+Interferometers:
+  IntE:
+    IntName: IntE
+    Out1: 2
+    Out2: 3
+    VSrcCh: 0
+    Phase0Voltage: 2.9549999999999796
+    Phase90Voltage: 3.2349999999999737
+    Phase180Voltage: 3.4849999999999683
+    Phase270Voltage: 3.7149999999999634
+    Phase0power: 14557.5
+    Phase90power: 7385.5
+    Phase180power: 414.6
+    Phase270power: 7506.5
+    V: 3.2349999999999737
+  IntF:
+    IntName: IntF
+    Out1: 5
+    Out2: 6
+    VSrcCh: 1
+    Phase0Voltage: 2.2099999999999955
+    Phase90Voltage: 2.0
+    Phase180Voltage: 2.9199999999999804
+    Phase270Voltage: 3.179999999999975
+    Phase0power: 14565.545454545454
+    Phase90power: 7642.0
+    Phase180power: 427.8181818181818
+    Phase270power: 7808.0
+    V: 2.0
+
+
+LADAqs:
+  LADAq1:
+    com_port: /dev/ttyACM1
+  LADAq2:
+    com_port: /dev/ttyACM0
+  LADAqSHG:
+    com_port: /dev/ttyACM2
+
+
+OSW:
+  SW1Status: 1
+  SW2Status: 2
+  SW3Status: 1
+  SW4Status: 2
+  com_port: null
+
+
+Powermeters:
+  PM1:
+    power_meter_id: USB0::0x1313::0x8078::P0023583::INSTR
+    wavelength: 770
+
+
+TimeTagger:
+  Channels:
+    Ch1:
+      ChannelID: 1
+      TriggerLevel: 0.06
+      Deadtime: 50000
+      DelayTime: -4500
+    Ch2:
+      ChannelID: 2
+      TriggerLevel: 0.06
+      Deadtime: 50000
+      DelayTime: 14000
+    Ch3:
+      ChannelID: 3
+      TriggerLevel: 0.06
+      Deadtime: 50000
+      DelayTime: 200
+    Ch4:
+      ChannelID: 3
+      TriggerLevel: 0.06
+      Deadtime: 50000
+      DelayTime: 0
+    Ch5:
+      ChannelID: 5
+      TriggerLevel: 0.06
+      Deadtime: 50000
+      DelayTime: 2000
+    Ch6:
+      ChannelID: 6
+      TriggerLevel: 0.06
+      Deadtime: 50000
+      DelayTime: 4800
+    Ch7:
+      ChannelID: 7
+      TriggerLevel: 0.06
+      Deadtime: 2000
+      DelayTime: 0
+  DataAcquisitionTime: 10
+
+  
+Laser:
+  port: ttyUSB0
+  baud_rate: 9600
+  min_pow: 600
+  max_pow: 1700
+  wavelength: 1550
+  power: 6

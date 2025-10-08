@@ -6,15 +6,15 @@ Alice:
         IntName: IntA
         Out1: -1
         Out2: -5
-        Phase0Voltage: 3.1
+        Phase0Voltage: 2.9
         Phase0power: 0.0005904458
-        Phase180Voltage: 3.67
+        Phase180Voltage: 3.47
         Phase180power: 0.0017175367777777777
         Phase270Voltage: 3.92
         Phase270power: 0.0011574313333333334
         Phase90Voltage: 3.41
         Phase90power: 0.0011899726666666664
-        V: 3.67
+        V: 3.2
         VSrcCh: 1
         com_port: /dev/ttyACM1
         target_port: 8819
@@ -105,7 +105,7 @@ Alice:
     baud_rate: 9600
     max_pow: 1700
     min_pow: 600
-    port: /dev/ttyUSB2
+    port: /dev/ttyUSB0
     power: 6
     wavelength: 1540
   Optical Switch:
@@ -114,6 +114,8 @@ Alice:
     SW3: true
     SW4: false
     com_port: null
+
+
 Bob:
   Optical Switch:
     SW1: true
@@ -121,6 +123,8 @@ Bob:
     SW3: true
     SW4: false
     com_port: null
+
+
 Charlie:
   EDFA:
     baud_rate: 9600
@@ -178,89 +182,91 @@ Charlie:
       slot: 6
     Switch:
       slot: 5
-Connection: {}
-Interferometers:
-  IntA:
-    IntName: IntA
-    Out1: -1
-    Out2: -5
-    Phase0Voltage: 3.1
-    Phase0power: 0.0005904458
-    Phase180Voltage: 3.67
-    Phase180power: 0.0017175367777777777
-    Phase270Voltage: 3.92
-    Phase270power: 0.0011574313333333334
-    Phase90Voltage: 3.41
-    Phase90power: 0.0011899726666666664
-    V: 3.7949999999999777
-    VSrcCh: 1
-  IntB:
-    IntName: IntB
-    Out1: -2
-    Out2: -6
-    Phase0Voltage: 3.1
-    Phase0power: 0.0005904458
-    Phase180Voltage: 3.67
-    Phase180power: 0.0017175367777777777
-    Phase270Voltage: 3.92
-    Phase270power: 0.0011574313333333334
-    Phase90Voltage: 3.41
-    Phase90power: 0.0011899726666666664
-    V: 3.67
-    VSrcCh: 1
-  IntC:
-    IntName: IntC
-    Out1: -3
-    Out2: -7
-    Phase0Voltage: 0.0
-    Phase0power: 0.0
-    Phase180Voltage: 0.0
-    Phase180power: 0.0
-    Phase270Voltage: 0.0
-    Phase270power: 0.0
-    Phase90Voltage: 0.0
-    Phase90power: 0.0
-    V: 2.0
-    VSrcCh: 1
-  IntD:
-    IntName: IntD
-    Out1: -3
-    Out2: -7
-    Phase0Voltage: 3.100000000000001
-    Phase0power: 0.0011844089
-    Phase180Voltage: 3.7000000000000015
-    Phase180power: 2.39562769e-06
-    Phase270Voltage: 0.0
-    Phase270power: 0.0
-    Phase90Voltage: 0.0
-    Phase90power: 0.0
-    V: 2.8
-    VSrcCh: 1
-  IntE:
-    IntName: IntE
-    Out1: 2
-    Out2: 3
-    Phase0Voltage: 2.9574999999999956
-    Phase0power: 0.001292980655
-    Phase180Voltage: 3.494999999999984
-    Phase180power: 1.570858017904762e-05
-    Phase270Voltage: 3.7249999999999788
-    Phase270power: 0.0006577415531100002
-    Phase90Voltage: 3.247499999999989
-    Phase90power: 0.0006577415531100002
-    V: 2.17
-    VSrcCh: 0
-  IntF:
-    IntName: IntF
-    Out1: 5
-    Out2: 6
-    Phase0Voltage: 0.1
-    Phase0power: 0.0005904458
-    Phase180Voltage: 0.1
-    Phase180power: 0.0017175367777777777
-    Phase270Voltage: 0.1
-    Phase270power: 0.0011574313333333334
-    Phase90Voltage: 0.1
-    Phase90power: 0.0011899726666666664
-    V: 2.5
-    VSrcCh: 0
+
+      
+# Connection: {}
+# Interferometers:
+#   IntA:
+#     IntName: IntA
+#     Out1: -1
+#     Out2: -5
+#     Phase0Voltage: 2.9
+#     Phase0power: 0.0005904458
+#     Phase180Voltage: 3.47
+#     Phase180power: 0.0017175367777777777
+#     Phase270Voltage: 3.92
+#     Phase270power: 0.0011574313333333334
+#     Phase90Voltage: 3.41
+#     Phase90power: 0.0011899726666666664
+#     V: 3.4713289009
+#     VSrcCh: 1
+#   IntB:
+#     IntName: IntB
+#     Out1: -2
+#     Out2: -6
+#     Phase0Voltage: 3.1
+#     Phase0power: 0.0005904458
+#     Phase180Voltage: 3.67
+#     Phase180power: 0.0017175367777777777
+#     Phase270Voltage: 3.92
+#     Phase270power: 0.0011574313333333334
+#     Phase90Voltage: 3.41
+#     Phase90power: 0.0011899726666666664
+#     V: 3.67
+#     VSrcCh: 1
+#   IntC:
+#     IntName: IntC
+#     Out1: -3
+#     Out2: -7
+#     Phase0Voltage: 0.0
+#     Phase0power: 0.0
+#     Phase180Voltage: 0.0
+#     Phase180power: 0.0
+#     Phase270Voltage: 0.0
+#     Phase270power: 0.0
+#     Phase90Voltage: 0.0
+#     Phase90power: 0.0
+#     V: 2.0
+#     VSrcCh: 1
+#   IntD:
+#     IntName: IntD
+#     Out1: -3
+#     Out2: -7
+#     Phase0Voltage: 3.100000000000001
+#     Phase0power: 0.0011844089
+#     Phase180Voltage: 3.7000000000000015
+#     Phase180power: 2.39562769e-06
+#     Phase270Voltage: 0.0
+#     Phase270power: 0.0
+#     Phase90Voltage: 0.0
+#     Phase90power: 0.0
+#     V: 2.8
+#     VSrcCh: 1
+#   IntE:
+#     IntName: IntE
+#     Out1: 2
+#     Out2: 3
+#     Phase0Voltage: 2.9574999999999956
+#     Phase0power: 0.001292980655
+#     Phase180Voltage: 3.494999999999984
+#     Phase180power: 1.570858017904762e-05
+#     Phase270Voltage: 3.7249999999999788
+#     Phase270power: 0.0006577415531100002
+#     Phase90Voltage: 3.247499999999989
+#     Phase90power: 0.0006577415531100002
+#     V: 2.17
+#     VSrcCh: 0
+#   IntF:
+#     IntName: IntF
+#     Out1: 5
+#     Out2: 6
+#     Phase0Voltage: 0.1
+#     Phase0power: 0.0005904458
+#     Phase180Voltage: 0.1
+#     Phase180power: 0.0017175367777777777
+#     Phase270Voltage: 0.1
+#     Phase270power: 0.0011574313333333334
+#     Phase90Voltage: 0.1
+#     Phase90power: 0.0011899726666666664
+#     V: 2.5
+#     VSrcCh: 0

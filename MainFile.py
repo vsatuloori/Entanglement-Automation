@@ -89,7 +89,7 @@ def test1(persons):
 
     print("Connecting SHG...")
     persons["Charlie"].SHG.connect()
-    persons["Charlie"].SHG.SetTemperature(channel=1, temperature=44)
+    persons["Charlie"].SHG.SetTemperature(channel=1, temperature=44.5)
     # persons["Charlie"].SHG.SHGScan(power_meter, channel=1)
     
 
@@ -103,30 +103,16 @@ if __name__ == '__main__':
     persons["Alice"].laser.connect_laser()
     persons["Alice"].laser.turn_on()
 
-    interferometer = persons["Alice"].interferometer
+    # persons["Alice"].interferometer.Interferometers["IntA"].connect()
 
-    # test1(persons)
+    test1(persons)
 
     # print(persons["Charlie"].SHG)
     # print(persons[0].interferometer.Interferometers["IntB"])
     Int = persons["Alice"].interferometer.Interferometers["IntA"] #Tested:  B C D
-    interferometer.CharaterizeInterferometers(
-        SupportingFuncs=SupportFunc(),
-        interferometer_list=[interferometer.IntE],   # <<<< clean access ✅
-        voltage_range=[2.75, 3.8],
-        voltage_source=interferometer.get_LADAq_for_interferometer('IntE'),
-        Measurement_Inst=pm,
-        step_size=0.005,
-        tolerance=0.05,
-        UpdateVoltage=True,
-        plotVoltagePower=True,
-        measurement_function = "measure_power",
-        plot_live = True,
-        sleep_time = 1
-    )
-    # for i in range(20):
-    #    newV = 1 + 0.1 * i
-    #    Int.VsetCh(newV, 1)
-    #    print(newV)
-    #    sleep(1)
-    # Int.VsetCh(1, 1)
+    for i in range(20):
+       newV = 1 + 0.1 * i
+       Int.VsetCh(newV, 1)
+       print(newV)
+       sleep(1)
+    Int.VsetCh(1, 1)
