@@ -15,6 +15,7 @@ from PPCL_Bare_Bones import LaserControl # Import Laser class
 from CWEntanglement.EDFAControl import EDFAControl # Import EDFA class
 from CWEntanglement.SHGScanTEC_v2 import SHGController # Import SHG class
 from CWEntanglement.yokogawa.yoAQ2212 import yokogawa # Import yokogawa class
+from CW_HighDimSaveData_v10_20251008 import HighDim # Import high-dim entanglement basis class
 import matplotlib.pyplot as plt
 
 class Person:
@@ -99,13 +100,17 @@ if __name__ == '__main__':
     config_path = "config.yaml" # Adjust the path as needed
     config = load_config(config_path)
     persons = assign_persons_from_config(config)
+    HD = HighDim(file=None, params=config["HD"], timetagger=persons["Charlie"].time_tagger,
+                 interferometer=persons["Alice"].interferometer, 
+                 OSW=persons["Charlie"].optical_switch,
+                 yokogawa=persons["Charlie"].yokogawa)
     
     persons["Alice"].laser.connect_laser()
     persons["Alice"].laser.turn_on()
 
     # persons["Alice"].interferometer.Interferometers["IntA"].connect()
 
-    test1(persons)
+    # test1(persons)
 
     # print(persons["Charlie"].SHG)
     # print(persons[0].interferometer.Interferometers["IntB"])

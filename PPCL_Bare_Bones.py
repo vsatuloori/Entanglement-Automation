@@ -78,7 +78,7 @@ if __name__ == "__main__":
     ports = ["/dev/ttyUSB0"]#, "COM14"]
     # ports = ["/dev/ttyUSB2"]#, "COM14"]
     for port in ports:
-        laser = LaserControl(port=port,wavelength=1550,power=10)
+        laser = LaserControl(port=port,wavelength=1552.651,power=10)
         laser.connect_laser()
         laser.turn_on(wait_time=3)
         # laser.disconnect()

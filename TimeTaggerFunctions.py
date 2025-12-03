@@ -9,6 +9,7 @@ class TT:
         print("Time tagger is connected")
 
         # Initialize the channel parameters at the class level
+        self.ChDict = {}
         self.Chlist = []
         self.TriggerLevels = []
         self.Deadtimes = []
@@ -25,6 +26,7 @@ class TT:
 
         # Load channel data directly into the class-level attributes
         for channel, data in params['Channels'].items():
+            self.ChDict.update({channel:data['ChannelID']})
             self.Chlist.append(data['ChannelID'])
             self.TriggerLevels.append(data['TriggerLevel'])
             self.Deadtimes.append(data['Deadtime'])

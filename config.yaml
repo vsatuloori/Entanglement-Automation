@@ -183,90 +183,100 @@ Charlie:
     Switch:
       slot: 5
 
+  TimeTagger:
+    Channels:
+      Ch1:
+        ChannelID: 1
+        TriggerLevel: 0.06
+        Deadtime: 50000
+        DelayTime: -4500
+      Ch2:
+        ChannelID: 2
+        TriggerLevel: 0.06
+        Deadtime: 50000
+        DelayTime: 14000
+      Ch3:
+        ChannelID: 3
+        TriggerLevel: 0.06
+        Deadtime: 50000
+        DelayTime: 200
+      Ch4:
+        ChannelID: 3
+        TriggerLevel: 0.06
+        Deadtime: 50000
+        DelayTime: 0
+      Ch5:
+        ChannelID: 5
+        TriggerLevel: 0.06
+        Deadtime: 50000
+        DelayTime: 2000
+      Ch6:
+        ChannelID: 6
+        TriggerLevel: 0.06
+        Deadtime: 50000
+        DelayTime: 4800
+      Ch7:
+        ChannelID: 7
+        TriggerLevel: 0.06
+        Deadtime: 2000
+        DelayTime: 0
+    DataAcquisitionTime: 10
+
       
-# Connection: {}
-# Interferometers:
-#   IntA:
-#     IntName: IntA
-#     Out1: -1
-#     Out2: -5
-#     Phase0Voltage: 2.9
-#     Phase0power: 0.0005904458
-#     Phase180Voltage: 3.47
-#     Phase180power: 0.0017175367777777777
-#     Phase270Voltage: 3.92
-#     Phase270power: 0.0011574313333333334
-#     Phase90Voltage: 3.41
-#     Phase90power: 0.0011899726666666664
-#     V: 3.4713289009
-#     VSrcCh: 1
-#   IntB:
-#     IntName: IntB
-#     Out1: -2
-#     Out2: -6
-#     Phase0Voltage: 3.1
-#     Phase0power: 0.0005904458
-#     Phase180Voltage: 3.67
-#     Phase180power: 0.0017175367777777777
-#     Phase270Voltage: 3.92
-#     Phase270power: 0.0011574313333333334
-#     Phase90Voltage: 3.41
-#     Phase90power: 0.0011899726666666664
-#     V: 3.67
-#     VSrcCh: 1
-#   IntC:
-#     IntName: IntC
-#     Out1: -3
-#     Out2: -7
-#     Phase0Voltage: 0.0
-#     Phase0power: 0.0
-#     Phase180Voltage: 0.0
-#     Phase180power: 0.0
-#     Phase270Voltage: 0.0
-#     Phase270power: 0.0
-#     Phase90Voltage: 0.0
-#     Phase90power: 0.0
-#     V: 2.0
-#     VSrcCh: 1
-#   IntD:
-#     IntName: IntD
-#     Out1: -3
-#     Out2: -7
-#     Phase0Voltage: 3.100000000000001
-#     Phase0power: 0.0011844089
-#     Phase180Voltage: 3.7000000000000015
-#     Phase180power: 2.39562769e-06
-#     Phase270Voltage: 0.0
-#     Phase270power: 0.0
-#     Phase90Voltage: 0.0
-#     Phase90power: 0.0
-#     V: 2.8
-#     VSrcCh: 1
-#   IntE:
-#     IntName: IntE
-#     Out1: 2
-#     Out2: 3
-#     Phase0Voltage: 2.9574999999999956
-#     Phase0power: 0.001292980655
-#     Phase180Voltage: 3.494999999999984
-#     Phase180power: 1.570858017904762e-05
-#     Phase270Voltage: 3.7249999999999788
-#     Phase270power: 0.0006577415531100002
-#     Phase90Voltage: 3.247499999999989
-#     Phase90power: 0.0006577415531100002
-#     V: 2.17
-#     VSrcCh: 0
-#   IntF:
-#     IntName: IntF
-#     Out1: 5
-#     Out2: 6
-#     Phase0Voltage: 0.1
-#     Phase0power: 0.0005904458
-#     Phase180Voltage: 0.1
-#     Phase180power: 0.0017175367777777777
-#     Phase270Voltage: 0.1
-#     Phase270power: 0.0011574313333333334
-#     Phase90Voltage: 0.1
-#     Phase90power: 0.0011899726666666664
-#     V: 2.5
-#     VSrcCh: 0
+HD:
+  ChannelMappings:
+    Alice:
+      X:
+        Channels:
+        - Ch2
+        - Ch3
+        IntName: IntE
+        IntVoltage: Phase0Voltage
+      Y:
+        Channels:
+        - Ch2
+        - Ch3
+        IntName: IntE
+        IntVoltage: Phase90Voltage
+      Z:
+        Channels:
+        - Ch2
+        IntName: null
+        IntVoltage: null
+    Bob:
+      X:
+        Channels:
+        - Ch5
+        - Ch6
+        IntName: IntF
+        IntVoltage: Phase0Voltage
+      Y:
+        Channels:
+        - Ch5
+        - Ch6
+        IntName: IntF
+        IntVoltage: Phase90Voltage
+      Z:
+        Channels:
+        - Ch5
+        IntName: null
+        IntVoltage: null
+    Clk:
+    - Ch7
+
+
+  Connection:
+    LADAq2:
+    - IntE
+    - IntF
+    LADAqSHG:
+    - SHGCrystal
+
+
+  LADAqs:
+    LADAq1:
+      com_port: /dev/ttyACM1
+    LADAq2:
+      com_port: /dev/ttyACM0
+    LADAqSHG:
+      com_port: /dev/ttyACM2
